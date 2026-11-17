@@ -188,3 +188,13 @@ The closure of {run_id, roll_no, course_code, invigilator_name} in SEATING_1NF c
 **Lossless join**: each decomposition step splits one relation into two by projecting on the FD's left-hand side (the join attribute). By the Heath theorem, if X -> Y holds and we decompose R into R1(X, Y) and R2(X, Z), the natural join on X reconstructs R exactly. Every decomposition above satisfies this condition, so no data is lost.
 
 **Dependency preservation**: all eight FDs (FD1–FD8) are preserved in the 3NF schema — each FD's LHS and RHS attributes appear together in at least one final table. No FD is "lost" across the joins, so the DBMS can enforce every constraint without joining tables.
+
+## Normalization step summary table
+
+| Step | Normal form reached | Key change | Tables after |
+|---|---|---|---|
+| UNF | None | Flat single table | SEATING_SHEET (1 table) |
+| 1NF | 1NF | Unfold invigilators; key becomes (run_id, roll_no, course_code, invigilator_name) | SEATING_1NF (1 table) |
+| 2NF | 2NF | Remove partial dependencies; decompose on FD1, FD2, FD3, FD5, FD6 | RUN, STUDENT, EXAM, INVIGILATOR, EXAM_REGISTRATION, SEAT_ALLOCATION, INVIGILATOR_ASSIGNMENT (7 tables) |
+| 3NF | 3NF | Remove transitive dependency FD4 from SEAT_ALLOCATION; extract ROOM | RUN, STUDENT, EXAM, INVIGILATOR, ROOM, EXAM_REGISTRATION, SEAT_ALLOCATION, INVIGILATOR_ASSIGNMENT (8 tables) |
+| Physical | 3NF + BCNF | Add surrogate ids, rename to plural, add constraint_violations | 9 final tables |

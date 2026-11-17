@@ -182,3 +182,9 @@ Using Armstrong's axioms on the FDs listed above:
 - Transitivity: FD6 + FD4 gives (run_id, roll_no, course_code) -> building, room_capacity (the transitive dependency removed in 3NF).
 
 The closure of {run_id, roll_no, course_code, invigilator_name} in SEATING_1NF covers all attributes, confirming it is a superkey. Because no proper subset is a superkey, it is the minimal key (candidate key) of the 1NF relation.
+
+## Lossless-join and dependency-preservation checks
+
+**Lossless join**: each decomposition step splits one relation into two by projecting on the FD's left-hand side (the join attribute). By the Heath theorem, if X -> Y holds and we decompose R into R1(X, Y) and R2(X, Z), the natural join on X reconstructs R exactly. Every decomposition above satisfies this condition, so no data is lost.
+
+**Dependency preservation**: all eight FDs (FD1–FD8) are preserved in the 3NF schema — each FD's LHS and RHS attributes appear together in at least one final table. No FD is "lost" across the joins, so the DBMS can enforce every constraint without joining tables.

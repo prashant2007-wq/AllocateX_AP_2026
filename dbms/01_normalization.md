@@ -172,3 +172,13 @@ BCNF requires every determinant of a non-trivial FD to be a candidate key. Check
 ## UNF anomaly summary
 
 The unnormalized SEATING_SHEET violates 1NF because invigilators is a multi-valued attribute (comma-separated names and departments in one cell). This single violation cascades into update, insert and delete anomalies throughout the flat sheet, motivating the full normalization walk-through above.
+
+## FD closure and key derivation
+
+Using Armstrong's axioms on the FDs listed above:
+
+- Reflexivity: any attribute set determines itself.
+- Augmentation: FD2 (roll_no -> student_name, section, semester) augments to (roll_no, run_id) -> (student_name, section, semester, run_id).
+- Transitivity: FD6 + FD4 gives (run_id, roll_no, course_code) -> building, room_capacity (the transitive dependency removed in 3NF).
+
+The closure of {run_id, roll_no, course_code, invigilator_name} in SEATING_1NF covers all attributes, confirming it is a superkey. Because no proper subset is a superkey, it is the minimal key (candidate key) of the 1NF relation.

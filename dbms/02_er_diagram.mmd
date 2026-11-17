@@ -1,0 +1,73 @@
+erDiagram
+  STUDENTS ||--o{ EXAM_REGISTRATIONS : registers
+  EXAMS ||--o{ EXAM_REGISTRATIONS : has
+  ALLOCATION_RUNS ||--o{ SEAT_ALLOCATIONS : produces
+  EXAM_REGISTRATIONS ||--o{ SEAT_ALLOCATIONS : seated_as
+  ROOMS ||--o{ SEAT_ALLOCATIONS : holds
+  ALLOCATION_RUNS ||--o{ INVIGILATOR_ASSIGNMENTS : staffs
+  ROOMS ||--o{ INVIGILATOR_ASSIGNMENTS : supervised_in
+  INVIGILATORS ||--o{ INVIGILATOR_ASSIGNMENTS : assigned
+  ALLOCATION_RUNS ||--o{ CONSTRAINT_VIOLATIONS : logs
+
+  STUDENTS {
+    int id PK
+    string roll_no UK
+    string name
+    string section
+    int semester
+  }
+  EXAMS {
+    int id PK
+    string course_code
+    date exam_date
+    string exam_slot
+    int duration_min
+  }
+  ROOMS {
+    int id PK
+    string name UK
+    int capacity
+    int num_rows
+    int num_cols
+    string building
+  }
+  INVIGILATORS {
+    int id PK
+    string name
+    string department
+    int max_exams_per_day
+  }
+  EXAM_REGISTRATIONS {
+    int exam_id PK, FK
+    int student_id PK, FK
+  }
+  ALLOCATION_RUNS {
+    int id PK
+    date exam_date
+    string exam_slot
+    timestamptz created_at
+    string status
+    string created_by
+  }
+  SEAT_ALLOCATIONS {
+    int id PK
+    int run_id FK
+    int exam_id FK
+    int student_id FK
+    int room_id FK
+    int seat_row
+    int seat_col
+  }
+  INVIGILATOR_ASSIGNMENTS {
+    int id PK
+    int run_id FK
+    int room_id FK
+    int invigilator_id FK
+  }
+  CONSTRAINT_VIOLATIONS {
+    int id PK
+    int run_id FK
+    string violation_type
+    jsonb details_json
+    timestamptz created_at
+  }

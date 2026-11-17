@@ -168,3 +168,7 @@ BCNF requires every determinant of a non-trivial FD to be a candidate key. Check
 - rooms.capacity <= num_rows * num_cols allows for broken seats and odd room shapes.
 - constraint_violations.details_json is a JSONB payload used only for display in the audit trail; we never filter on its inner keys, so we treat it as one atomic value.
 - Every solver execution is a new allocation_runs row, which gives versioning (compare run 3 and run 5, or roll back).
+
+## UNF anomaly summary
+
+The unnormalized SEATING_SHEET violates 1NF because invigilators is a multi-valued attribute (comma-separated names and departments in one cell). This single violation cascades into update, insert and delete anomalies throughout the flat sheet, motivating the full normalization walk-through above.

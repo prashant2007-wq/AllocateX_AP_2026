@@ -9,6 +9,13 @@ import cors from "cors";
 // Import database connection function
 import connectDB from "./config/db.js";
 
+// Import API route handlers
+import studentRoutes from "./routes/studentRoutes.js";
+import roomRoutes from "./routes/roomRoutes.js";
+import invigilatorRoutes from "./routes/invigilatorRoutes.js";
+import examRoutes from "./routes/examRoutes.js";
+import allocationRoutes from "./routes/allocationRoutes.js";
+
 // Connect to MongoDB
 connectDB();
 
@@ -21,15 +28,21 @@ app.use(cors());
 // Middleware: Parse incoming JSON request bodies
 app.use(express.json());
 
+// API Routes
+app.use("/api/students", studentRoutes);
+app.use("/api/rooms", roomRoutes);
+app.use("/api/invigilators", invigilatorRoutes);
+app.use("/api/exams", examRoutes);
+app.use("/api/allocations", allocationRoutes);
+
 // Simple health/status route
 app.get("/api/status", (req, res) => {
   res.json({ message: "AllocateX Backend is running" });
 });
 
-// Retrieve the port number from environment variables or default to 5000
-const PORT = process.env.PORT || 5000;
-
-// Start listening for incoming connections
+const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`\n=================================`);
+  console.log(`🚀 SERVER RUNNING ON PORT: ${PORT}`);
+  console.log(`=================================\n`);
 });

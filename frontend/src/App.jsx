@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './App.css';
 import Sidebar from './components/Sidebar';
+import QuickSetup from './components/QuickSetup';
 import Dashboard from './components/Dashboard';
 import Students from './components/Students';
 import Rooms from './components/Rooms';
@@ -12,8 +13,16 @@ import Allocation from './components/Allocation';
  * Main AllocateX Application Layout
  */
 function App() {
-  // Active navigation tab state, defaulting to 'Dashboard'
-  const [activeTab, setActiveTab] = useState('Dashboard');
+  // Default tab is 'Quick Setup', first in the navigation
+  const [activeTab, setActiveTab] = useState('Quick Setup');
+  const [latestAllocation, setLatestAllocation] = useState(null);
+  const [latestExamId, setLatestExamId] = useState('');
+
+  const handleQuickSetupComplete = (allocation, examId) => {
+    setLatestAllocation(allocation);
+    setLatestExamId(examId);
+    setActiveTab('Allocation');
+  };
 
   return (
     <div className="app-layout">
@@ -22,19 +31,34 @@ function App() {
 
       {/* Main content display area */}
       <main className="main-content">
-        {activeTab === 'Dashboard' && <Dashboard />}
-        {activeTab === 'Students' && <Students />}
-        {activeTab === 'Rooms' && <Rooms />}
-        {activeTab === 'Invigilators' && <Invigilators />}
-        {activeTab === 'Exams' && <Exams />}
-        {activeTab === 'Allocation' && <Allocation />}
+        <div className="content-container">
+          {activeTab === 'Quick Setup' && (
+            <QuickSetup onComplete={handleQuickSetupComplete} />
+          )}
 
-        {activeTab === 'History' && (
-          <div className="placeholder-container">
-            <h2>Allocation History & Logs</h2>
-            <p>Review and audit past finalized runs and constraint relaxation logs.</p>
-          </div>
-        )}
+          {activeTab === 'Dashboard' && (
+            <Dashboard onNavigate={setActiveTab} />
+          )}
+
+          {activeTab === 'Allocation' && (
+            <Allocation
+              initialAllocation={latestAllocation}
+              initialExamId={latestExamId}
+            />
+          )}
+
+          {activeTab === 'Students' && <Students />}
+          {activeTab === 'Rooms' && <Rooms />}
+          {activeTab === 'Invigilators' && <Invigilators />}
+          {activeTab === 'Exams' && <Exams />}
+
+          {activeTab === 'History' && (
+            <div className="panel-card placeholder-container">
+              <h2>Allocation History & Logs</h2>
+              <p>Review and audit past finalized runs and constraint relaxation logs.</p>
+            </div>
+          )}
+        </div>
       </main>
     </div>
   );

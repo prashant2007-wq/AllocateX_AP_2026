@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { API_BASE } from '../config';
 
 /**
  * Rooms Management Component
@@ -16,15 +17,10 @@ function Rooms() {
   });
   const [error, setError] = useState(null);
 
-  // Fetch all rooms from backend on mount
-  useEffect(() => {
-    fetchRooms();
-  }, []);
-
   const fetchRooms = async () => {
     try {
       setLoading(true);
-      const res = await fetch('http://localhost:5001/api/rooms');
+      const res = await fetch(`${API_BASE}/api/rooms`);
       if (!res.ok) throw new Error('Failed to fetch rooms');
       const data = await res.json();
       setRooms(data);
@@ -36,6 +32,33 @@ function Rooms() {
       setLoading(false);
     }
   };
+
+  // Fetch all rooms from backend on mount
+  useEffect(() => {
+    let isMounted = true;
+    async function init() {
+      try {
+        const res = await fetch(`${API_BASE}/api/rooms`);
+        if (!res.ok) throw new Error('Failed to fetch rooms');
+        const data = await res.json();
+        if (isMounted) {
+          setRooms(data);
+          setError(null);
+        }
+      } catch (err) {
+        if (isMounted) {
+          console.error('Error fetching rooms:', err);
+          setError('Could not load rooms. Ensure the backend server is running.');
+        }
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    }
+    init();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   // Handle form input change
   const handleChange = (e) => {
@@ -53,7 +76,7 @@ function Rooms() {
       const rowsNum = Number(formData.rows);
       const colsNum = Number(formData.columns);
 
-      const res = await fetch('http://localhost:5001/api/rooms', {
+      const res = await fetch(`${API_BASE}/api/rooms`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -95,7 +118,7 @@ function Rooms() {
     if (!window.confirm('Are you sure you want to delete this room?')) return;
 
     try {
-      const res = await fetch(`http://localhost:5001/api/rooms/${id}`, {
+      const res = await fetch(`${API_BASE}/api/rooms/${id}`, {
         method: 'DELETE',
       });
 

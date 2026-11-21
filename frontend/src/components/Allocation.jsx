@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import SeatingChart from './SeatingChart';
+import { API_BASE } from '../config';
 
 /**
  * Allocation Component
@@ -7,32 +8,57 @@ import SeatingChart from './SeatingChart';
  * Allows selecting an exam and executing the graph-coloring & bin-packing
  * seating allocation solver, visualizing the generated seating charts.
  */
-function Allocation() {
+function Allocation({ initialAllocation = null, initialExamId = '' }) {
   const [exams, setExams] = useState([]);
-  const [selectedExamId, setSelectedExamId] = useState('');
-  const [allocationResult, setAllocationResult] = useState(null);
+  const [selectedExamId, setSelectedExamId] = useState(initialExamId || '');
+  const [allocationResult, setAllocationResult] = useState(initialAllocation);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Fetch all exams on mount to populate the dropdown
   useEffect(() => {
-    async function loadExams() {
+    let isMounted = true;
+
+    async function loadInitialData() {
       try {
-        const res = await fetch('http://localhost:5001/api/exams');
+        const res = await fetch(`${API_BASE}/api/exams`);
         if (!res.ok) throw new Error('Failed to fetch exams');
         const data = await res.json();
+        if (!isMounted) return;
         setExams(data);
-        if (data.length > 0) {
-          setSelectedExamId(data[0]._id);
+        if (data.length > 0 && !initialExamId) {
+          setSelectedExamId((prev) => prev || data[0]._id);
         }
       } catch (err) {
+        if (!isMounted) return;
         console.error('Error loading exams for allocation:', err);
         setError('Could not load exams. Ensure the backend server is running.');
       }
+
+      if (!initialAllocation) {
+        try {
+          const res = await fetch(`${API_BASE}/api/allocations`);
+          if (res.ok) {
+            const list = await res.json();
+            if (isMounted && Array.isArray(list) && list.length > 0) {
+              setAllocationResult(list[0]);
+              if (list[0].exam) {
+                const examVal = typeof list[0].exam === 'string' ? list[0].exam : list[0].exam._id;
+                setSelectedExamId((prev) => prev || examVal);
+              }
+            }
+          }
+        } catch (err) {
+          console.error('Error fetching latest allocation:', err);
+        }
+      }
     }
 
-    loadExams();
-  }, []);
+    loadInitialData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [initialAllocation, initialExamId]);
 
   // Trigger solver execution
   const handleGenerate = async () => {
@@ -45,7 +71,7 @@ function Allocation() {
       setLoading(true);
       setError(null);
 
-      const res = await fetch(`http://localhost:5001/api/allocations/generate/${selectedExamId}`, {
+      const res = await fetch(`${API_BASE}/api/allocations/generate/${selectedExamId}`, {
         method: 'POST',
       });
 
@@ -58,7 +84,7 @@ function Allocation() {
       setAllocationResult(data);
     } catch (err) {
       console.error('Error generating allocation:', err);
-      setError(err.message);
+      setError(err.message || 'An error occurred while generating seating chart.');
     } finally {
       setLoading(false);
     }
@@ -67,51 +93,68 @@ function Allocation() {
   return (
     <div className="allocation-view">
       <div className="page-header">
-        <h1>Seating Allocation Engine</h1>
-        <p>Run graph-coloring and first-fit bin-packing algorithms to generate optimal seating plans.</p>
+        <h1>Seating Allocation Chart</h1>
+        <p>
+          Constraint satisfaction solver ensures no two students from the same academic section sit adjacently.
+        </p>
       </div>
 
-      {error && <div className="alert-error">{error}</div>}
+      {/* Error notification banner */}
+      {error && (
+        <div className="alert-box alert-error">
+          <div className="alert-icon">⚠️</div>
+          <div className="alert-content">
+            <h4>Allocation Notice</h4>
+            <p>{error}</p>
+          </div>
+          <button type="button" className="alert-close" onClick={() => setError(null)}>✕</button>
+        </div>
+      )}
 
-      {/* Control Card to Trigger Allocation */}
-      <div className="panel-card allocation-controls-card">
-        <h2 className="panel-title">Select Exam to Allocate</h2>
-        <div className="allocation-form-flex">
-          <div className="select-wrapper">
-            <label htmlFor="examSelect">Choose Examination:</label>
+      {/* Exam selection and solver trigger panel */}
+      <div className="allocation-control-panel panel-card">
+        <h2 className="panel-title">Select Scheduled Exam</h2>
+        <div className="control-row">
+          <div className="form-group select-exam-group">
             <select
-              id="examSelect"
-              className="form-input select-exam"
+              className="form-control"
               value={selectedExamId}
               onChange={(e) => setSelectedExamId(e.target.value)}
               disabled={loading || exams.length === 0}
             >
-              {exams.length === 0 && <option value="">No exams available</option>}
-              {exams.map((exam) => {
-                const count = (exam.students && exam.students.length) || 0;
-                return (
+              {exams.length === 0 ? (
+                <option value="">No exams found. Use Quick Setup or create an exam first.</option>
+              ) : (
+                exams.map((exam) => (
                   <option key={exam._id} value={exam._id}>
-                    {exam.examName} ({exam.courseCode}) - {exam.examDate} [{exam.examSlot}] ({count} students)
+                    {exam.examName} ({exam.courseCode}) - {exam.examDate} [{exam.examSlot}] - {exam.students?.length || 0} Students
                   </option>
-                );
-              })}
+                ))
+              )}
             </select>
           </div>
 
           <button
             type="button"
-            className="btn btn-primary btn-generate"
+            className="btn btn-primary"
             onClick={handleGenerate}
             disabled={loading || !selectedExamId}
           >
-            {loading ? 'Processing Algorithm...' : '⚡ Generate Seating Plan'}
+            {loading ? (
+              <>
+                <span className="spinner-small" />
+                Solving Constraints...
+              </>
+            ) : (
+              'Re-Run Allocation Solver'
+            )}
           </button>
         </div>
       </div>
 
       {/* Loading State Banner */}
       {loading && (
-        <div className="loading-solver-banner">
+        <div className="loading-solver-banner panel-card">
           <div className="spinner" />
           <div>
             <h3>Processing Algorithm...</h3>
@@ -161,14 +204,18 @@ function Allocation() {
             )}
           </div>
 
-          {/* Section Legend */}
+          {/* Section Legend above the grid */}
           <div className="section-legend panel-card">
             <span className="legend-title">Section Legend:</span>
-            <span className="legend-item"><span className="legend-swatch swatch-a" /> Section A</span>
-            <span className="legend-item"><span className="legend-swatch swatch-b" /> Section B</span>
-            <span className="legend-item"><span className="legend-swatch swatch-c" /> Section C</span>
-            <span className="legend-item"><span className="legend-swatch swatch-d" /> Section D</span>
-            <span className="legend-item"><span className="legend-swatch swatch-empty" /> Empty Seat</span>
+            <div className="legend-swatches-wrap">
+              <span className="legend-item"><span className="legend-swatch swatch-a" /> Section A</span>
+              <span className="legend-item"><span className="legend-swatch swatch-b" /> Section B</span>
+              <span className="legend-item"><span className="legend-swatch swatch-c" /> Section C</span>
+              <span className="legend-item"><span className="legend-swatch swatch-d" /> Section D</span>
+              <span className="legend-item"><span className="legend-swatch swatch-e" /> Section E</span>
+              <span className="legend-item"><span className="legend-swatch swatch-f" /> Section F</span>
+              <span className="legend-item"><span className="legend-swatch swatch-empty" /> Empty Seat</span>
+            </div>
           </div>
 
           {/* Render Seating Charts for Each Room */}

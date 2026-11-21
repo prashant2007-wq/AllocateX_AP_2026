@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { API_BASE } from '../config';
 
 /**
  * Invigilators Management Component
@@ -14,15 +15,10 @@ function Invigilators() {
   });
   const [error, setError] = useState(null);
 
-  // Fetch all invigilators from backend on mount
-  useEffect(() => {
-    fetchInvigilators();
-  }, []);
-
   const fetchInvigilators = async () => {
     try {
       setLoading(true);
-      const res = await fetch('http://localhost:5001/api/invigilators');
+      const res = await fetch(`${API_BASE}/api/invigilators`);
       if (!res.ok) throw new Error('Failed to fetch invigilators');
       const data = await res.json();
       setInvigilators(data);
@@ -34,6 +30,33 @@ function Invigilators() {
       setLoading(false);
     }
   };
+
+  // Fetch all invigilators from backend on mount
+  useEffect(() => {
+    let isMounted = true;
+    async function init() {
+      try {
+        const res = await fetch(`${API_BASE}/api/invigilators`);
+        if (!res.ok) throw new Error('Failed to fetch invigilators');
+        const data = await res.json();
+        if (isMounted) {
+          setInvigilators(data);
+          setError(null);
+        }
+      } catch (err) {
+        if (isMounted) {
+          console.error('Error fetching invigilators:', err);
+          setError('Could not load invigilators. Ensure the backend server is running.');
+        }
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    }
+    init();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   // Handle form input change
   const handleChange = (e) => {
@@ -48,7 +71,7 @@ function Invigilators() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch('http://localhost:5001/api/invigilators', {
+      const res = await fetch(`${API_BASE}/api/invigilators`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -82,7 +105,7 @@ function Invigilators() {
     if (!window.confirm('Are you sure you want to delete this invigilator?')) return;
 
     try {
-      const res = await fetch(`http://localhost:5001/api/invigilators/${id}`, {
+      const res = await fetch(`${API_BASE}/api/invigilators/${id}`, {
         method: 'DELETE',
       });
 

@@ -38,7 +38,7 @@ function SeatingChart({ room }) {
     }
   }
 
-  // Helper to determine seat color styling based on section
+  // Helper to determine seat color styling based on section (A to F supported)
   const getSectionClass = (section) => {
     if (!section) return 'seat-empty';
     const s = section.toUpperCase().trim();
@@ -46,6 +46,8 @@ function SeatingChart({ room }) {
     if (s === 'B') return 'seat-section-b';
     if (s === 'C') return 'seat-section-c';
     if (s === 'D') return 'seat-section-d';
+    if (s === 'E') return 'seat-section-e';
+    if (s === 'F') return 'seat-section-f';
     return 'seat-section-default';
   };
 
@@ -78,7 +80,7 @@ function SeatingChart({ room }) {
       <div
         className="seat-grid"
         style={{
-          gridTemplateColumns: `repeat(${totalCols}, minmax(110px, 1fr))`,
+          gridTemplateColumns: `repeat(${totalCols}, minmax(90px, 1fr))`,
         }}
       >
         {gridCells.map(({ row, col, seat }) => {

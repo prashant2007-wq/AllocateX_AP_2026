@@ -15,6 +15,7 @@ import roomRoutes from "./routes/roomRoutes.js";
 import invigilatorRoutes from "./routes/invigilatorRoutes.js";
 import examRoutes from "./routes/examRoutes.js";
 import allocationRoutes from "./routes/allocationRoutes.js";
+import setupRoutes from "./routes/setupRoutes.js";
 
 // Connect to MongoDB
 connectDB();
@@ -34,6 +35,7 @@ app.use("/api/rooms", roomRoutes);
 app.use("/api/invigilators", invigilatorRoutes);
 app.use("/api/exams", examRoutes);
 app.use("/api/allocations", allocationRoutes);
+app.use("/api/setup", setupRoutes);
 
 // Simple health/status route
 app.get("/api/status", (req, res) => {

@@ -3,20 +3,26 @@ import mongoose from "mongoose";
 
 /**
  * Connect to MongoDB database
- * Uses the connection string defined in process.env.MONGO_URI
+ * Uses process.env.MONGO_URI, local 27017, or seamlessly spins up MongoMemoryServer
  */
 const connectDB = async () => {
+  const uri = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/allocatex";
   try {
-    // Attempt to establish a connection to the MongoDB cluster/instance
-    await mongoose.connect(process.env.MONGO_URI);
-    console.log("MongoDB Connected");
+    await mongoose.connect(uri, { serverSelectionTimeoutMS: 2000 });
+    console.log(`MongoDB Connected: ${uri}`);
   } catch (error) {
-    // Log any connection failure details
-    console.error(`MongoDB connection error: ${error.message}`);
-    // Terminate the Node.js process immediately with an exit code of 1 (failure)
-    process.exit(1);
+    console.warn(`Local MongoDB at ${uri} unavailable (${error.message}). Starting in-memory MongoDB for development...`);
+    try {
+      const { MongoMemoryServer } = await import("mongodb-memory-server");
+      const mongod = await MongoMemoryServer.create();
+      const memoryUri = mongod.getUri();
+      await mongoose.connect(memoryUri);
+      console.log(`Connected to in-memory MongoDB at ${memoryUri}`);
+    } catch (memError) {
+      console.error(`MongoDB connection error: ${memError.message}`);
+      process.exit(1);
+    }
   }
 };
 
-// Export connectDB as the default export
 export default connectDB;

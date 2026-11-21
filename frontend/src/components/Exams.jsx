@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { API_BASE } from '../config';
 
 /**
  * Exams Management Component
@@ -16,15 +17,10 @@ function Exams() {
   });
   const [error, setError] = useState(null);
 
-  // Fetch all exams from backend on mount
-  useEffect(() => {
-    fetchExams();
-  }, []);
-
   const fetchExams = async () => {
     try {
       setLoading(true);
-      const res = await fetch('http://localhost:5001/api/exams');
+      const res = await fetch(`${API_BASE}/api/exams`);
       if (!res.ok) throw new Error('Failed to fetch exams');
       const data = await res.json();
       setExams(data);
@@ -36,6 +32,33 @@ function Exams() {
       setLoading(false);
     }
   };
+
+  // Fetch all exams from backend on mount
+  useEffect(() => {
+    let isMounted = true;
+    async function init() {
+      try {
+        const res = await fetch(`${API_BASE}/api/exams`);
+        if (!res.ok) throw new Error('Failed to fetch exams');
+        const data = await res.json();
+        if (isMounted) {
+          setExams(data);
+          setError(null);
+        }
+      } catch (err) {
+        if (isMounted) {
+          console.error('Error fetching exams:', err);
+          setError('Could not load exams. Ensure the backend server is running.');
+        }
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    }
+    init();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   // Handle form input change
   const handleChange = (e) => {
@@ -50,7 +73,7 @@ function Exams() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch('http://localhost:5001/api/exams', {
+      const res = await fetch(`${API_BASE}/api/exams`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -86,7 +109,7 @@ function Exams() {
     if (!window.confirm('Are you sure you want to delete this exam?')) return;
 
     try {
-      const res = await fetch(`http://localhost:5001/api/exams/${id}`, {
+      const res = await fetch(`${API_BASE}/api/exams/${id}`, {
         method: 'DELETE',
       });
 

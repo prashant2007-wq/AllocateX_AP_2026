@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { API_BASE } from '../config';
 
 /**
  * Students Management Component
@@ -16,15 +17,10 @@ function Students() {
   });
   const [error, setError] = useState(null);
 
-  // Fetch all students from backend on mount
-  useEffect(() => {
-    fetchStudents();
-  }, []);
-
   const fetchStudents = async () => {
     try {
       setLoading(true);
-      const res = await fetch('http://localhost:5001/api/students');
+      const res = await fetch(`${API_BASE}/api/students`);
       if (!res.ok) throw new Error('Failed to fetch students');
       const data = await res.json();
       setStudents(data);
@@ -36,6 +32,33 @@ function Students() {
       setLoading(false);
     }
   };
+
+  // Fetch all students from backend on mount
+  useEffect(() => {
+    let isMounted = true;
+    async function init() {
+      try {
+        const res = await fetch(`${API_BASE}/api/students`);
+        if (!res.ok) throw new Error('Failed to fetch students');
+        const data = await res.json();
+        if (isMounted) {
+          setStudents(data);
+          setError(null);
+        }
+      } catch (err) {
+        if (isMounted) {
+          console.error('Error fetching students:', err);
+          setError('Could not load students. Ensure the backend server is running.');
+        }
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    }
+    init();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   // Handle form input change
   const handleChange = (e) => {
@@ -50,7 +73,7 @@ function Students() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch('http://localhost:5001/api/students', {
+      const res = await fetch(`${API_BASE}/api/students`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -89,7 +112,7 @@ function Students() {
     if (!window.confirm('Are you sure you want to delete this student?')) return;
 
     try {
-      const res = await fetch(`http://localhost:5001/api/students/${id}`, {
+      const res = await fetch(`${API_BASE}/api/students/${id}`, {
         method: 'DELETE',
       });
 

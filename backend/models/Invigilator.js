@@ -11,6 +11,10 @@ const invigilatorSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  isAvailable: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 // Create and export the Invigilator model

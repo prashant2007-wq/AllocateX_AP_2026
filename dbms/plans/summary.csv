@@ -14,3 +14,5 @@ Q12,READ,per-building seat utilisation for the latest completed run,0.456,0.410,
 Q13,WRITE,insert a new allocation run (wrapped in BEGIN...ROLLBACK for safety),0.275,0.225,0.309,0.270,N/A
 Q14,WRITE,mark a run as LOCKED (simulates admin approving results),0.216,0.175,0.289,0.227,Seq Scan
 Q15,WRITE,delete all seat allocations for a FAILED run (cleanup),7.889,6.756,6.827,7.157,Hash Join; Seq Scan
+# end of file
+&& git add dbms/plans/summary.csv && git commit -m "dbms: minor summary.csv formatting cleanup"# end of file

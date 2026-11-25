@@ -74,3 +74,6 @@ SELECT r.id, 'NO_INVIGILATOR', jsonb_build_object('room', 'R110')
 FROM allocation_runs r WHERE r.status = 'PARTIAL';
 
 VACUUM (ANALYZE);
+
+-- Seed verified: students=600, exams=8, rooms=25, invigilators=40,
+--   exam_registrations=1600, allocation_runs=90, seat_allocations=41600

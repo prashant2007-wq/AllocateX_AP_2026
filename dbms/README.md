@@ -42,3 +42,4 @@ python3 dbms/gen_timings_md.py
 | seat_allocations | 41,600 |
 | invigilator_assignments | 2,808 |
 | constraint_violations | 60 |
+# AllocateX AP 2026 — DBMS module completed (CP1–CP4)

@@ -1,0 +1,136 @@
+Query: Q12  Type: READ
+Description: per-building seat utilisation for the latest completed run
+============================================================
+=== Run 1 ===
+                                                                          QUERY PLAN                                                                           
+---------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=322.53..322.54 rows=3 width=62) (actual time=0.376..0.377 rows=3 loops=1)
+   Sort Key: (round((((count(sa.student_id))::numeric / (NULLIF(sum(rm.capacity), 0))::numeric) * '100'::numeric), 2)) DESC
+   Sort Method: quicksort  Memory: 25kB
+   Buffers: shared hit=19
+   InitPlan 1 (returns $0)
+     ->  Limit  (cost=0.14..0.35 rows=1 width=4) (actual time=0.009..0.009 rows=1 loops=1)
+           Buffers: shared hit=2
+           ->  Index Scan Backward using allocation_runs_pkey on allocation_runs  (cost=0.14..13.72 rows=66 width=4) (actual time=0.008..0.008 rows=1 loops=1)
+                 Filter: ((status)::text = 'COMPLETED'::text)
+                 Rows Removed by Filter: 3
+                 Buffers: shared hit=2
+   ->  GroupAggregate  (cost=315.42..322.16 rows=3 width=62) (actual time=0.297..0.353 rows=3 loops=1)
+         Group Key: rm.building
+         Buffers: shared hit=16
+         ->  Sort  (cost=315.42..316.75 rows=533 width=16) (actual time=0.250..0.270 rows=411 loops=1)
+               Sort Key: rm.building
+               Sort Method: quicksort  Memory: 56kB
+               Buffers: shared hit=13
+               ->  Hash Right Join  (cost=17.98..291.28 rows=533 width=16) (actual time=0.062..0.147 rows=411 loops=1)
+                     Hash Cond: (sa.room_id = rm.id)
+                     Buffers: shared hit=10
+                     ->  Bitmap Heap Scan on seat_allocations sa  (cost=16.42..288.08 rows=533 width=8) (actual time=0.042..0.066 rows=400 loops=1)
+                           Recheck Cond: (run_id = $0)
+                           Heap Blocks: exact=4
+                           Buffers: shared hit=9
+                           ->  Bitmap Index Scan on uq_seat_position_per_run  (cost=0.00..16.29 rows=533 width=0) (actual time=0.034..0.034 rows=400 loops=1)
+                                 Index Cond: (run_id = $0)
+                                 Buffers: shared hit=5
+                     ->  Hash  (cost=1.25..1.25 rows=25 width=12) (actual time=0.013..0.013 rows=25 loops=1)
+                           Buckets: 1024  Batches: 1  Memory Usage: 10kB
+                           Buffers: shared hit=1
+                           ->  Seq Scan on rooms rm  (cost=0.00..1.25 rows=25 width=12) (actual time=0.005..0.007 rows=25 loops=1)
+                                 Buffers: shared hit=1
+ Planning:
+   Buffers: shared hit=231
+ Planning Time: 0.906 ms
+ Execution Time: 0.456 ms
+(37 rows)
+
+
+
+=== Run 2 ===
+                                                                          QUERY PLAN                                                                           
+---------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=322.53..322.54 rows=3 width=62) (actual time=0.339..0.340 rows=3 loops=1)
+   Sort Key: (round((((count(sa.student_id))::numeric / (NULLIF(sum(rm.capacity), 0))::numeric) * '100'::numeric), 2)) DESC
+   Sort Method: quicksort  Memory: 25kB
+   Buffers: shared hit=19
+   InitPlan 1 (returns $0)
+     ->  Limit  (cost=0.14..0.35 rows=1 width=4) (actual time=0.009..0.009 rows=1 loops=1)
+           Buffers: shared hit=2
+           ->  Index Scan Backward using allocation_runs_pkey on allocation_runs  (cost=0.14..13.72 rows=66 width=4) (actual time=0.008..0.008 rows=1 loops=1)
+                 Filter: ((status)::text = 'COMPLETED'::text)
+                 Rows Removed by Filter: 3
+                 Buffers: shared hit=2
+   ->  GroupAggregate  (cost=315.42..322.16 rows=3 width=62) (actual time=0.275..0.324 rows=3 loops=1)
+         Group Key: rm.building
+         Buffers: shared hit=16
+         ->  Sort  (cost=315.42..316.75 rows=533 width=16) (actual time=0.232..0.245 rows=411 loops=1)
+               Sort Key: rm.building
+               Sort Method: quicksort  Memory: 56kB
+               Buffers: shared hit=13
+               ->  Hash Right Join  (cost=17.98..291.28 rows=533 width=16) (actual time=0.056..0.136 rows=411 loops=1)
+                     Hash Cond: (sa.room_id = rm.id)
+                     Buffers: shared hit=10
+                     ->  Bitmap Heap Scan on seat_allocations sa  (cost=16.42..288.08 rows=533 width=8) (actual time=0.037..0.059 rows=400 loops=1)
+                           Recheck Cond: (run_id = $0)
+                           Heap Blocks: exact=4
+                           Buffers: shared hit=9
+                           ->  Bitmap Index Scan on uq_seat_position_per_run  (cost=0.00..16.29 rows=533 width=0) (actual time=0.031..0.031 rows=400 loops=1)
+                                 Index Cond: (run_id = $0)
+                                 Buffers: shared hit=5
+                     ->  Hash  (cost=1.25..1.25 rows=25 width=12) (actual time=0.013..0.013 rows=25 loops=1)
+                           Buckets: 1024  Batches: 1  Memory Usage: 10kB
+                           Buffers: shared hit=1
+                           ->  Seq Scan on rooms rm  (cost=0.00..1.25 rows=25 width=12) (actual time=0.004..0.007 rows=25 loops=1)
+                                 Buffers: shared hit=1
+ Planning:
+   Buffers: shared hit=231
+ Planning Time: 0.775 ms
+ Execution Time: 0.410 ms
+(37 rows)
+
+
+
+=== Run 3 ===
+                                                                          QUERY PLAN                                                                           
+---------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=322.53..322.54 rows=3 width=62) (actual time=0.357..0.358 rows=3 loops=1)
+   Sort Key: (round((((count(sa.student_id))::numeric / (NULLIF(sum(rm.capacity), 0))::numeric) * '100'::numeric), 2)) DESC
+   Sort Method: quicksort  Memory: 25kB
+   Buffers: shared hit=19
+   InitPlan 1 (returns $0)
+     ->  Limit  (cost=0.14..0.35 rows=1 width=4) (actual time=0.010..0.010 rows=1 loops=1)
+           Buffers: shared hit=2
+           ->  Index Scan Backward using allocation_runs_pkey on allocation_runs  (cost=0.14..13.72 rows=66 width=4) (actual time=0.009..0.009 rows=1 loops=1)
+                 Filter: ((status)::text = 'COMPLETED'::text)
+                 Rows Removed by Filter: 3
+                 Buffers: shared hit=2
+   ->  GroupAggregate  (cost=315.42..322.16 rows=3 width=62) (actual time=0.291..0.339 rows=3 loops=1)
+         Group Key: rm.building
+         Buffers: shared hit=16
+         ->  Sort  (cost=315.42..316.75 rows=533 width=16) (actual time=0.243..0.255 rows=411 loops=1)
+               Sort Key: rm.building
+               Sort Method: quicksort  Memory: 56kB
+               Buffers: shared hit=13
+               ->  Hash Right Join  (cost=17.98..291.28 rows=533 width=16) (actual time=0.065..0.146 rows=411 loops=1)
+                     Hash Cond: (sa.room_id = rm.id)
+                     Buffers: shared hit=10
+                     ->  Bitmap Heap Scan on seat_allocations sa  (cost=16.42..288.08 rows=533 width=8) (actual time=0.044..0.067 rows=400 loops=1)
+                           Recheck Cond: (run_id = $0)
+                           Heap Blocks: exact=4
+                           Buffers: shared hit=9
+                           ->  Bitmap Index Scan on uq_seat_position_per_run  (cost=0.00..16.29 rows=533 width=0) (actual time=0.037..0.037 rows=400 loops=1)
+                                 Index Cond: (run_id = $0)
+                                 Buffers: shared hit=5
+                     ->  Hash  (cost=1.25..1.25 rows=25 width=12) (actual time=0.014..0.014 rows=25 loops=1)
+                           Buckets: 1024  Batches: 1  Memory Usage: 10kB
+                           Buffers: shared hit=1
+                           ->  Seq Scan on rooms rm  (cost=0.00..1.25 rows=25 width=12) (actual time=0.005..0.007 rows=25 loops=1)
+                                 Buffers: shared hit=1
+ Planning:
+   Buffers: shared hit=231
+ Planning Time: 0.901 ms
+ Execution Time: 0.437 ms
+(37 rows)
+
+
+
+Summary: run1=0.456ms  run2=0.410ms  run3=0.437ms  avg=0.434ms

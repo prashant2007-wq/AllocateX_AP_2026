@@ -1,0 +1,109 @@
+Query: Q10  Type: READ
+Description: exam registration counts per exam with seats available across all rooms
+============================================================
+=== Run 1 ===
+                                                                  QUERY PLAN                                                                  
+----------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=61.16..61.18 rows=8 width=62) (actual time=1.186..1.189 rows=8 loops=1)
+   Sort Key: e.exam_date, e.exam_slot, e.course_code
+   Sort Method: quicksort  Memory: 25kB
+   Buffers: shared hit=16
+   ->  HashAggregate  (cost=60.94..61.04 rows=8 width=62) (actual time=1.133..1.138 rows=8 loops=1)
+         Group Key: e.id
+         Batches: 1  Memory Usage: 24kB
+         Buffers: shared hit=10
+         ->  Nested Loop  (cost=2.49..48.94 rows=1600 width=34) (actual time=0.066..0.777 rows=1600 loops=1)
+               Buffers: shared hit=10
+               ->  Aggregate  (cost=1.31..1.32 rows=1 width=8) (actual time=0.025..0.025 rows=1 loops=1)
+                     Buffers: shared hit=1
+                     ->  Seq Scan on rooms  (cost=0.00..1.25 rows=25 width=2) (actual time=0.012..0.013 rows=25 loops=1)
+                           Buffers: shared hit=1
+               ->  Hash Join  (cost=1.18..31.61 rows=1600 width=26) (actual time=0.039..0.576 rows=1600 loops=1)
+                     Hash Cond: (er.exam_id = e.id)
+                     Buffers: shared hit=9
+                     ->  Seq Scan on exam_registrations er  (cost=0.00..24.00 rows=1600 width=8) (actual time=0.006..0.152 rows=1600 loops=1)
+                           Buffers: shared hit=8
+                     ->  Hash  (cost=1.08..1.08 rows=8 width=22) (actual time=0.024..0.024 rows=8 loops=1)
+                           Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                           Buffers: shared hit=1
+                           ->  Seq Scan on exams e  (cost=0.00..1.08 rows=8 width=22) (actual time=0.014..0.016 rows=8 loops=1)
+                                 Buffers: shared hit=1
+ Planning:
+   Buffers: shared hit=219
+ Planning Time: 1.018 ms
+ Execution Time: 1.463 ms
+(28 rows)
+
+
+
+=== Run 2 ===
+                                                                  QUERY PLAN                                                                  
+----------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=61.16..61.18 rows=8 width=62) (actual time=0.811..0.813 rows=8 loops=1)
+   Sort Key: e.exam_date, e.exam_slot, e.course_code
+   Sort Method: quicksort  Memory: 25kB
+   Buffers: shared hit=16
+   ->  HashAggregate  (cost=60.94..61.04 rows=8 width=62) (actual time=0.765..0.769 rows=8 loops=1)
+         Group Key: e.id
+         Batches: 1  Memory Usage: 24kB
+         Buffers: shared hit=10
+         ->  Nested Loop  (cost=2.49..48.94 rows=1600 width=34) (actual time=0.042..0.526 rows=1600 loops=1)
+               Buffers: shared hit=10
+               ->  Aggregate  (cost=1.31..1.32 rows=1 width=8) (actual time=0.014..0.015 rows=1 loops=1)
+                     Buffers: shared hit=1
+                     ->  Seq Scan on rooms  (cost=0.00..1.25 rows=25 width=2) (actual time=0.005..0.007 rows=25 loops=1)
+                           Buffers: shared hit=1
+               ->  Hash Join  (cost=1.18..31.61 rows=1600 width=26) (actual time=0.027..0.394 rows=1600 loops=1)
+                     Hash Cond: (er.exam_id = e.id)
+                     Buffers: shared hit=9
+                     ->  Seq Scan on exam_registrations er  (cost=0.00..24.00 rows=1600 width=8) (actual time=0.006..0.105 rows=1600 loops=1)
+                           Buffers: shared hit=8
+                     ->  Hash  (cost=1.08..1.08 rows=8 width=22) (actual time=0.013..0.014 rows=8 loops=1)
+                           Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                           Buffers: shared hit=1
+                           ->  Seq Scan on exams e  (cost=0.00..1.08 rows=8 width=22) (actual time=0.006..0.007 rows=8 loops=1)
+                                 Buffers: shared hit=1
+ Planning:
+   Buffers: shared hit=219
+ Planning Time: 1.255 ms
+ Execution Time: 0.905 ms
+(28 rows)
+
+
+
+=== Run 3 ===
+                                                                  QUERY PLAN                                                                  
+----------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=61.16..61.18 rows=8 width=62) (actual time=1.463..1.466 rows=8 loops=1)
+   Sort Key: e.exam_date, e.exam_slot, e.course_code
+   Sort Method: quicksort  Memory: 25kB
+   Buffers: shared hit=16
+   ->  HashAggregate  (cost=60.94..61.04 rows=8 width=62) (actual time=1.403..1.408 rows=8 loops=1)
+         Group Key: e.id
+         Batches: 1  Memory Usage: 24kB
+         Buffers: shared hit=10
+         ->  Nested Loop  (cost=2.49..48.94 rows=1600 width=34) (actual time=0.080..0.971 rows=1600 loops=1)
+               Buffers: shared hit=10
+               ->  Aggregate  (cost=1.31..1.32 rows=1 width=8) (actual time=0.028..0.029 rows=1 loops=1)
+                     Buffers: shared hit=1
+                     ->  Seq Scan on rooms  (cost=0.00..1.25 rows=25 width=2) (actual time=0.012..0.016 rows=25 loops=1)
+                           Buffers: shared hit=1
+               ->  Hash Join  (cost=1.18..31.61 rows=1600 width=26) (actual time=0.050..0.720 rows=1600 loops=1)
+                     Hash Cond: (er.exam_id = e.id)
+                     Buffers: shared hit=9
+                     ->  Seq Scan on exam_registrations er  (cost=0.00..24.00 rows=1600 width=8) (actual time=0.010..0.182 rows=1600 loops=1)
+                           Buffers: shared hit=8
+                     ->  Hash  (cost=1.08..1.08 rows=8 width=22) (actual time=0.024..0.025 rows=8 loops=1)
+                           Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                           Buffers: shared hit=1
+                           ->  Seq Scan on exams e  (cost=0.00..1.08 rows=8 width=22) (actual time=0.010..0.013 rows=8 loops=1)
+                                 Buffers: shared hit=1
+ Planning:
+   Buffers: shared hit=219
+ Planning Time: 1.864 ms
+ Execution Time: 1.618 ms
+(28 rows)
+
+
+
+Summary: run1=1.463ms  run2=0.905ms  run3=1.618ms  avg=1.329ms

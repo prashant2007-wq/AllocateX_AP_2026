@@ -1,0 +1,103 @@
+Query: Q01  Type: READ
+Description: student looks up their seat (GET /api/students/:id/seat?exam_id=)
+============================================================
+=== Run 1 ===
+                                                                              QUERY PLAN                                                                              
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Nested Loop  (cost=8.60..19.06 rows=1 width=40) (actual time=0.055..0.059 rows=1 loops=1)
+   Buffers: shared hit=8
+   ->  Nested Loop  (cost=8.60..17.95 rows=1 width=38) (actual time=0.050..0.054 rows=1 loops=1)
+         Buffers: shared hit=7
+         ->  Hash Join  (cost=8.32..9.65 rows=1 width=23) (actual time=0.032..0.035 rows=1 loops=1)
+               Hash Cond: (rm.id = sa.room_id)
+               Buffers: shared hit=4
+               ->  Seq Scan on rooms rm  (cost=0.00..1.25 rows=25 width=15) (actual time=0.004..0.005 rows=25 loops=1)
+                     Buffers: shared hit=1
+               ->  Hash  (cost=8.31..8.31 rows=1 width=16) (actual time=0.021..0.021 rows=1 loops=1)
+                     Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                     Buffers: shared hit=3
+                     ->  Index Scan using uq_seat_student_per_run on seat_allocations sa  (cost=0.29..8.31 rows=1 width=16) (actual time=0.015..0.016 rows=1 loops=1)
+                           Index Cond: ((run_id = 1) AND (student_id = 40) AND (exam_id = 1))
+                           Buffers: shared hit=3
+         ->  Index Scan using students_pkey on students s  (cost=0.28..8.29 rows=1 width=23) (actual time=0.018..0.018 rows=1 loops=1)
+               Index Cond: (id = 40)
+               Buffers: shared hit=3
+   ->  Seq Scan on exams e  (cost=0.00..1.10 rows=1 width=10) (actual time=0.004..0.004 rows=1 loops=1)
+         Filter: (id = 1)
+         Rows Removed by Filter: 7
+         Buffers: shared hit=1
+ Planning:
+   Buffers: shared hit=348
+ Planning Time: 1.027 ms
+ Execution Time: 0.123 ms
+(26 rows)
+
+
+
+=== Run 2 ===
+                                                                              QUERY PLAN                                                                              
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Nested Loop  (cost=8.60..19.06 rows=1 width=40) (actual time=0.046..0.051 rows=1 loops=1)
+   Buffers: shared hit=8
+   ->  Nested Loop  (cost=8.60..17.95 rows=1 width=38) (actual time=0.041..0.045 rows=1 loops=1)
+         Buffers: shared hit=7
+         ->  Hash Join  (cost=8.32..9.65 rows=1 width=23) (actual time=0.029..0.032 rows=1 loops=1)
+               Hash Cond: (rm.id = sa.room_id)
+               Buffers: shared hit=4
+               ->  Seq Scan on rooms rm  (cost=0.00..1.25 rows=25 width=15) (actual time=0.005..0.006 rows=25 loops=1)
+                     Buffers: shared hit=1
+               ->  Hash  (cost=8.31..8.31 rows=1 width=16) (actual time=0.018..0.018 rows=1 loops=1)
+                     Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                     Buffers: shared hit=3
+                     ->  Index Scan using uq_seat_student_per_run on seat_allocations sa  (cost=0.29..8.31 rows=1 width=16) (actual time=0.011..0.011 rows=1 loops=1)
+                           Index Cond: ((run_id = 1) AND (student_id = 40) AND (exam_id = 1))
+                           Buffers: shared hit=3
+         ->  Index Scan using students_pkey on students s  (cost=0.28..8.29 rows=1 width=23) (actual time=0.011..0.011 rows=1 loops=1)
+               Index Cond: (id = 40)
+               Buffers: shared hit=3
+   ->  Seq Scan on exams e  (cost=0.00..1.10 rows=1 width=10) (actual time=0.004..0.005 rows=1 loops=1)
+         Filter: (id = 1)
+         Rows Removed by Filter: 7
+         Buffers: shared hit=1
+ Planning:
+   Buffers: shared hit=358
+ Planning Time: 1.000 ms
+ Execution Time: 0.127 ms
+(26 rows)
+
+
+
+=== Run 3 ===
+                                                                              QUERY PLAN                                                                              
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Nested Loop  (cost=8.60..19.06 rows=1 width=40) (actual time=0.041..0.045 rows=1 loops=1)
+   Buffers: shared hit=8
+   ->  Nested Loop  (cost=8.60..17.95 rows=1 width=38) (actual time=0.037..0.040 rows=1 loops=1)
+         Buffers: shared hit=7
+         ->  Hash Join  (cost=8.32..9.65 rows=1 width=23) (actual time=0.025..0.028 rows=1 loops=1)
+               Hash Cond: (rm.id = sa.room_id)
+               Buffers: shared hit=4
+               ->  Seq Scan on rooms rm  (cost=0.00..1.25 rows=25 width=15) (actual time=0.004..0.005 rows=25 loops=1)
+                     Buffers: shared hit=1
+               ->  Hash  (cost=8.31..8.31 rows=1 width=16) (actual time=0.015..0.015 rows=1 loops=1)
+                     Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                     Buffers: shared hit=3
+                     ->  Index Scan using uq_seat_student_per_run on seat_allocations sa  (cost=0.29..8.31 rows=1 width=16) (actual time=0.009..0.010 rows=1 loops=1)
+                           Index Cond: ((run_id = 1) AND (student_id = 40) AND (exam_id = 1))
+                           Buffers: shared hit=3
+         ->  Index Scan using students_pkey on students s  (cost=0.28..8.29 rows=1 width=23) (actual time=0.011..0.011 rows=1 loops=1)
+               Index Cond: (id = 40)
+               Buffers: shared hit=3
+   ->  Seq Scan on exams e  (cost=0.00..1.10 rows=1 width=10) (actual time=0.004..0.004 rows=1 loops=1)
+         Filter: (id = 1)
+         Rows Removed by Filter: 7
+         Buffers: shared hit=1
+ Planning:
+   Buffers: shared hit=358
+ Planning Time: 1.050 ms
+ Execution Time: 0.125 ms
+(26 rows)
+
+
+
+Summary: run1=0.123ms  run2=0.127ms  run3=0.125ms  avg=0.125ms

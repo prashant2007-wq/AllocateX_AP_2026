@@ -1,0 +1,76 @@
+Query: Q09  Type: READ
+Description: violation summary by type across all runs
+============================================================
+=== Run 1 ===
+                                                             QUERY PLAN                                                             
+------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=4.05..4.06 rows=4 width=34) (actual time=0.114..0.115 rows=4 loops=1)
+   Sort Key: (count(*)) DESC
+   Sort Method: quicksort  Memory: 25kB
+   Buffers: shared hit=14
+   ->  GroupAggregate  (cost=3.37..4.01 rows=4 width=34) (actual time=0.091..0.102 rows=4 loops=1)
+         Group Key: violation_type
+         Buffers: shared hit=11
+         ->  Sort  (cost=3.37..3.52 rows=60 width=22) (actual time=0.062..0.065 rows=60 loops=1)
+               Sort Key: violation_type
+               Sort Method: quicksort  Memory: 29kB
+               Buffers: shared hit=4
+               ->  Seq Scan on constraint_violations  (cost=0.00..1.60 rows=60 width=22) (actual time=0.007..0.012 rows=60 loops=1)
+                     Buffers: shared hit=1
+ Planning:
+   Buffers: shared hit=89
+ Planning Time: 0.424 ms
+ Execution Time: 0.184 ms
+(17 rows)
+
+
+
+=== Run 2 ===
+                                                             QUERY PLAN                                                             
+------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=4.05..4.06 rows=4 width=34) (actual time=0.136..0.136 rows=4 loops=1)
+   Sort Key: (count(*)) DESC
+   Sort Method: quicksort  Memory: 25kB
+   Buffers: shared hit=14
+   ->  GroupAggregate  (cost=3.37..4.01 rows=4 width=34) (actual time=0.103..0.118 rows=4 loops=1)
+         Group Key: violation_type
+         Buffers: shared hit=11
+         ->  Sort  (cost=3.37..3.52 rows=60 width=22) (actual time=0.071..0.074 rows=60 loops=1)
+               Sort Key: violation_type
+               Sort Method: quicksort  Memory: 29kB
+               Buffers: shared hit=4
+               ->  Seq Scan on constraint_violations  (cost=0.00..1.60 rows=60 width=22) (actual time=0.008..0.015 rows=60 loops=1)
+                     Buffers: shared hit=1
+ Planning:
+   Buffers: shared hit=89
+ Planning Time: 0.399 ms
+ Execution Time: 0.217 ms
+(17 rows)
+
+
+
+=== Run 3 ===
+                                                             QUERY PLAN                                                             
+------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=4.05..4.06 rows=4 width=34) (actual time=0.154..0.155 rows=4 loops=1)
+   Sort Key: (count(*)) DESC
+   Sort Method: quicksort  Memory: 25kB
+   Buffers: shared hit=14
+   ->  GroupAggregate  (cost=3.37..4.01 rows=4 width=34) (actual time=0.120..0.137 rows=4 loops=1)
+         Group Key: violation_type
+         Buffers: shared hit=11
+         ->  Sort  (cost=3.37..3.52 rows=60 width=22) (actual time=0.084..0.088 rows=60 loops=1)
+               Sort Key: violation_type
+               Sort Method: quicksort  Memory: 29kB
+               Buffers: shared hit=4
+               ->  Seq Scan on constraint_violations  (cost=0.00..1.60 rows=60 width=22) (actual time=0.011..0.018 rows=60 loops=1)
+                     Buffers: shared hit=1
+ Planning:
+   Buffers: shared hit=89
+ Planning Time: 0.609 ms
+ Execution Time: 0.299 ms
+(17 rows)
+
+
+
+Summary: run1=0.184ms  run2=0.217ms  run3=0.299ms  avg=0.233ms

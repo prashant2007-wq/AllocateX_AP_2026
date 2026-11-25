@@ -1,0 +1,91 @@
+Query: Q04  Type: READ
+Description: invigilator workload — how many rooms each invigilator covers across all runs
+============================================================
+=== Run 1 ===
+                                                                 QUERY PLAN                                                                  
+---------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=69.63..69.73 rows=40 width=34) (actual time=0.856..0.858 rows=40 loops=1)
+   Sort Key: (count(ia.room_id)) DESC
+   Sort Method: quicksort  Memory: 28kB
+   Buffers: shared hit=20
+   ->  HashAggregate  (cost=68.17..68.57 rows=40 width=34) (actual time=0.832..0.836 rows=40 loops=1)
+         Group Key: i.id
+         Batches: 1  Memory Usage: 24kB
+         Buffers: shared hit=17
+         ->  Hash Right Join  (cost=1.90..54.13 rows=2808 width=30) (actual time=0.034..0.542 rows=2808 loops=1)
+               Hash Cond: (ia.invigilator_id = i.id)
+               Buffers: shared hit=17
+               ->  Seq Scan on invigilator_assignments ia  (cost=0.00..44.08 rows=2808 width=8) (actual time=0.006..0.146 rows=2808 loops=1)
+                     Buffers: shared hit=16
+               ->  Hash  (cost=1.40..1.40 rows=40 width=26) (actual time=0.022..0.022 rows=40 loops=1)
+                     Buckets: 1024  Batches: 1  Memory Usage: 11kB
+                     Buffers: shared hit=1
+                     ->  Seq Scan on invigilators i  (cost=0.00..1.40 rows=40 width=26) (actual time=0.011..0.014 rows=40 loops=1)
+                           Buffers: shared hit=1
+ Planning:
+   Buffers: shared hit=160
+ Planning Time: 0.695 ms
+ Execution Time: 0.933 ms
+(22 rows)
+
+
+
+=== Run 2 ===
+                                                                 QUERY PLAN                                                                  
+---------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=69.63..69.73 rows=40 width=34) (actual time=0.877..0.879 rows=40 loops=1)
+   Sort Key: (count(ia.room_id)) DESC
+   Sort Method: quicksort  Memory: 28kB
+   Buffers: shared hit=20
+   ->  HashAggregate  (cost=68.17..68.57 rows=40 width=34) (actual time=0.853..0.858 rows=40 loops=1)
+         Group Key: i.id
+         Batches: 1  Memory Usage: 24kB
+         Buffers: shared hit=17
+         ->  Hash Right Join  (cost=1.90..54.13 rows=2808 width=30) (actual time=0.028..0.542 rows=2808 loops=1)
+               Hash Cond: (ia.invigilator_id = i.id)
+               Buffers: shared hit=17
+               ->  Seq Scan on invigilator_assignments ia  (cost=0.00..44.08 rows=2808 width=8) (actual time=0.006..0.138 rows=2808 loops=1)
+                     Buffers: shared hit=16
+               ->  Hash  (cost=1.40..1.40 rows=40 width=26) (actual time=0.017..0.017 rows=40 loops=1)
+                     Buckets: 1024  Batches: 1  Memory Usage: 11kB
+                     Buffers: shared hit=1
+                     ->  Seq Scan on invigilators i  (cost=0.00..1.40 rows=40 width=26) (actual time=0.007..0.009 rows=40 loops=1)
+                           Buffers: shared hit=1
+ Planning:
+   Buffers: shared hit=160
+ Planning Time: 0.647 ms
+ Execution Time: 0.954 ms
+(22 rows)
+
+
+
+=== Run 3 ===
+                                                                 QUERY PLAN                                                                  
+---------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=69.63..69.73 rows=40 width=34) (actual time=0.860..0.862 rows=40 loops=1)
+   Sort Key: (count(ia.room_id)) DESC
+   Sort Method: quicksort  Memory: 28kB
+   Buffers: shared hit=20
+   ->  HashAggregate  (cost=68.17..68.57 rows=40 width=34) (actual time=0.837..0.841 rows=40 loops=1)
+         Group Key: i.id
+         Batches: 1  Memory Usage: 24kB
+         Buffers: shared hit=17
+         ->  Hash Right Join  (cost=1.90..54.13 rows=2808 width=30) (actual time=0.028..0.530 rows=2808 loops=1)
+               Hash Cond: (ia.invigilator_id = i.id)
+               Buffers: shared hit=17
+               ->  Seq Scan on invigilator_assignments ia  (cost=0.00..44.08 rows=2808 width=8) (actual time=0.005..0.141 rows=2808 loops=1)
+                     Buffers: shared hit=16
+               ->  Hash  (cost=1.40..1.40 rows=40 width=26) (actual time=0.017..0.017 rows=40 loops=1)
+                     Buckets: 1024  Batches: 1  Memory Usage: 11kB
+                     Buffers: shared hit=1
+                     ->  Seq Scan on invigilators i  (cost=0.00..1.40 rows=40 width=26) (actual time=0.007..0.010 rows=40 loops=1)
+                           Buffers: shared hit=1
+ Planning:
+   Buffers: shared hit=160
+ Planning Time: 0.610 ms
+ Execution Time: 0.934 ms
+(22 rows)
+
+
+
+Summary: run1=0.933ms  run2=0.954ms  run3=0.934ms  avg=0.940ms

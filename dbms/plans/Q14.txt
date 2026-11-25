@@ -1,0 +1,61 @@
+Query: Q14  Type: WRITE
+Description: mark a run as LOCKED (simulates admin approving results)
+============================================================
+=== Run 1 ===
+BEGIN
+                                                   QUERY PLAN                                                   
+----------------------------------------------------------------------------------------------------------------
+ Update on allocation_runs  (cost=0.00..2.35 rows=1 width=48) (actual time=0.161..0.186 rows=1 loops=1)
+   Buffers: shared hit=17
+   ->  Seq Scan on allocation_runs  (cost=0.00..2.35 rows=1 width=48) (actual time=0.018..0.043 rows=1 loops=1)
+         Filter: ((id = 1) AND ((status)::text = 'COMPLETED'::text))
+         Rows Removed by Filter: 89
+         Buffers: shared hit=1
+ Planning:
+   Buffers: shared hit=72
+ Planning Time: 0.424 ms
+ Execution Time: 0.216 ms
+(10 rows)
+
+ROLLBACK
+
+
+=== Run 2 ===
+BEGIN
+                                                   QUERY PLAN                                                   
+----------------------------------------------------------------------------------------------------------------
+ Update on allocation_runs  (cost=0.00..2.35 rows=1 width=48) (actual time=0.137..0.146 rows=1 loops=1)
+   Buffers: shared hit=17
+   ->  Seq Scan on allocation_runs  (cost=0.00..2.35 rows=1 width=48) (actual time=0.022..0.030 rows=1 loops=1)
+         Filter: ((id = 1) AND ((status)::text = 'COMPLETED'::text))
+         Rows Removed by Filter: 89
+         Buffers: shared hit=1
+ Planning:
+   Buffers: shared hit=72
+ Planning Time: 0.490 ms
+ Execution Time: 0.175 ms
+(10 rows)
+
+ROLLBACK
+
+
+=== Run 3 ===
+BEGIN
+                                                   QUERY PLAN                                                   
+----------------------------------------------------------------------------------------------------------------
+ Update on allocation_runs  (cost=0.00..2.35 rows=1 width=48) (actual time=0.256..0.264 rows=1 loops=1)
+   Buffers: shared hit=17
+   ->  Seq Scan on allocation_runs  (cost=0.00..2.35 rows=1 width=48) (actual time=0.020..0.027 rows=1 loops=1)
+         Filter: ((id = 1) AND ((status)::text = 'COMPLETED'::text))
+         Rows Removed by Filter: 89
+         Buffers: shared hit=1
+ Planning:
+   Buffers: shared hit=72
+ Planning Time: 0.492 ms
+ Execution Time: 0.289 ms
+(10 rows)
+
+ROLLBACK
+
+
+Summary: run1=0.216ms  run2=0.175ms  run3=0.289ms  avg=0.227ms

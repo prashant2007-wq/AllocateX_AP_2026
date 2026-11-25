@@ -1,0 +1,151 @@
+Query: Q05  Type: READ
+Description: adjacent-seat section conflict check for a given run
+============================================================
+=== Run 1 ===
+                                                                               QUERY PLAN                                                                                
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=605.25..605.25 rows=3 width=26) (actual time=1.150..1.153 rows=20 loops=1)
+   Buffers: shared hit=2899
+   ->  Sort  (cost=605.25..605.25 rows=3 width=26) (actual time=1.149..1.151 rows=20 loops=1)
+         Sort Key: a.seat_row, a.seat_col
+         Sort Method: top-N heapsort  Memory: 27kB
+         Buffers: shared hit=2899
+         ->  Nested Loop  (cost=318.66..605.22 rows=3 width=26) (actual time=0.232..1.110 rows=120 loops=1)
+               Join Filter: ((s1.section)::text = (s2.section)::text)
+               Rows Removed by Join Filter: 360
+               Buffers: shared hit=2896
+               ->  Nested Loop  (cost=318.38..600.51 rows=13 width=20) (actual time=0.221..0.722 rows=480 loops=1)
+                     Buffers: shared hit=1456
+                     ->  Hash Join  (cost=318.11..595.96 rows=13 width=14) (actual time=0.214..0.375 rows=480 loops=1)
+                           Hash Cond: ((a.room_id = sa.room_id) AND (a.seat_row = sa.seat_row) AND ((a.seat_col + 1) = sa.seat_col))
+                           Buffers: shared hit=16
+                           ->  Bitmap Heap Scan on seat_allocations a  (cost=17.15..289.99 rows=627 width=16) (actual time=0.040..0.068 rows=600 loops=1)
+                                 Recheck Cond: (run_id = 1)
+                                 Heap Blocks: exact=4
+                                 Buffers: shared hit=8
+                                 ->  Bitmap Index Scan on uq_seat_student_per_run  (cost=0.00..16.99 rows=627 width=0) (actual time=0.034..0.034 rows=600 loops=1)
+                                       Index Cond: (run_id = 1)
+                                       Buffers: shared hit=4
+                           ->  Hash  (cost=289.99..289.99 rows=627 width=16) (actual time=0.167..0.167 rows=600 loops=1)
+                                 Buckets: 1024  Batches: 1  Memory Usage: 39kB
+                                 Buffers: shared hit=8
+                                 ->  Bitmap Heap Scan on seat_allocations sa  (cost=17.15..289.99 rows=627 width=16) (actual time=0.021..0.091 rows=600 loops=1)
+                                       Recheck Cond: (run_id = 1)
+                                       Heap Blocks: exact=4
+                                       Buffers: shared hit=8
+                                       ->  Bitmap Index Scan on uq_seat_student_per_run  (cost=0.00..16.99 rows=627 width=0) (actual time=0.017..0.017 rows=600 loops=1)
+                                             Index Cond: (run_id = 1)
+                                             Buffers: shared hit=4
+                     ->  Index Scan using students_pkey on students s1  (cost=0.28..0.35 rows=1 width=14) (actual time=0.001..0.001 rows=1 loops=480)
+                           Index Cond: (id = a.student_id)
+                           Buffers: shared hit=1440
+               ->  Index Scan using students_pkey on students s2  (cost=0.28..0.35 rows=1 width=14) (actual time=0.001..0.001 rows=1 loops=480)
+                     Index Cond: (id = sa.student_id)
+                     Buffers: shared hit=1440
+ Planning:
+   Buffers: shared hit=415
+ Planning Time: 1.236 ms
+ Execution Time: 1.234 ms
+(42 rows)
+
+
+
+=== Run 2 ===
+                                                                               QUERY PLAN                                                                                
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=605.25..605.25 rows=3 width=26) (actual time=1.157..1.160 rows=20 loops=1)
+   Buffers: shared hit=2899
+   ->  Sort  (cost=605.25..605.25 rows=3 width=26) (actual time=1.157..1.158 rows=20 loops=1)
+         Sort Key: a.seat_row, a.seat_col
+         Sort Method: top-N heapsort  Memory: 27kB
+         Buffers: shared hit=2899
+         ->  Nested Loop  (cost=318.66..605.22 rows=3 width=26) (actual time=0.222..1.119 rows=120 loops=1)
+               Join Filter: ((s1.section)::text = (s2.section)::text)
+               Rows Removed by Join Filter: 360
+               Buffers: shared hit=2896
+               ->  Nested Loop  (cost=318.38..600.51 rows=13 width=20) (actual time=0.211..0.720 rows=480 loops=1)
+                     Buffers: shared hit=1456
+                     ->  Hash Join  (cost=318.11..595.96 rows=13 width=14) (actual time=0.204..0.366 rows=480 loops=1)
+                           Hash Cond: ((a.room_id = sa.room_id) AND (a.seat_row = sa.seat_row) AND ((a.seat_col + 1) = sa.seat_col))
+                           Buffers: shared hit=16
+                           ->  Bitmap Heap Scan on seat_allocations a  (cost=17.15..289.99 rows=627 width=16) (actual time=0.035..0.063 rows=600 loops=1)
+                                 Recheck Cond: (run_id = 1)
+                                 Heap Blocks: exact=4
+                                 Buffers: shared hit=8
+                                 ->  Bitmap Index Scan on uq_seat_student_per_run  (cost=0.00..16.99 rows=627 width=0) (actual time=0.029..0.029 rows=600 loops=1)
+                                       Index Cond: (run_id = 1)
+                                       Buffers: shared hit=4
+                           ->  Hash  (cost=289.99..289.99 rows=627 width=16) (actual time=0.160..0.160 rows=600 loops=1)
+                                 Buckets: 1024  Batches: 1  Memory Usage: 39kB
+                                 Buffers: shared hit=8
+                                 ->  Bitmap Heap Scan on seat_allocations sa  (cost=17.15..289.99 rows=627 width=16) (actual time=0.021..0.084 rows=600 loops=1)
+                                       Recheck Cond: (run_id = 1)
+                                       Heap Blocks: exact=4
+                                       Buffers: shared hit=8
+                                       ->  Bitmap Index Scan on uq_seat_student_per_run  (cost=0.00..16.99 rows=627 width=0) (actual time=0.016..0.016 rows=600 loops=1)
+                                             Index Cond: (run_id = 1)
+                                             Buffers: shared hit=4
+                     ->  Index Scan using students_pkey on students s1  (cost=0.28..0.35 rows=1 width=14) (actual time=0.001..0.001 rows=1 loops=480)
+                           Index Cond: (id = a.student_id)
+                           Buffers: shared hit=1440
+               ->  Index Scan using students_pkey on students s2  (cost=0.28..0.35 rows=1 width=14) (actual time=0.001..0.001 rows=1 loops=480)
+                     Index Cond: (id = sa.student_id)
+                     Buffers: shared hit=1440
+ Planning:
+   Buffers: shared hit=415
+ Planning Time: 1.201 ms
+ Execution Time: 1.232 ms
+(42 rows)
+
+
+
+=== Run 3 ===
+                                                                               QUERY PLAN                                                                                
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=605.25..605.25 rows=3 width=26) (actual time=1.164..1.168 rows=20 loops=1)
+   Buffers: shared hit=2899
+   ->  Sort  (cost=605.25..605.25 rows=3 width=26) (actual time=1.164..1.166 rows=20 loops=1)
+         Sort Key: a.seat_row, a.seat_col
+         Sort Method: top-N heapsort  Memory: 27kB
+         Buffers: shared hit=2899
+         ->  Nested Loop  (cost=318.66..605.22 rows=3 width=26) (actual time=0.224..1.127 rows=120 loops=1)
+               Join Filter: ((s1.section)::text = (s2.section)::text)
+               Rows Removed by Join Filter: 360
+               Buffers: shared hit=2896
+               ->  Nested Loop  (cost=318.38..600.51 rows=13 width=20) (actual time=0.213..0.722 rows=480 loops=1)
+                     Buffers: shared hit=1456
+                     ->  Hash Join  (cost=318.11..595.96 rows=13 width=14) (actual time=0.207..0.370 rows=480 loops=1)
+                           Hash Cond: ((a.room_id = sa.room_id) AND (a.seat_row = sa.seat_row) AND ((a.seat_col + 1) = sa.seat_col))
+                           Buffers: shared hit=16
+                           ->  Bitmap Heap Scan on seat_allocations a  (cost=17.15..289.99 rows=627 width=16) (actual time=0.032..0.061 rows=600 loops=1)
+                                 Recheck Cond: (run_id = 1)
+                                 Heap Blocks: exact=4
+                                 Buffers: shared hit=8
+                                 ->  Bitmap Index Scan on uq_seat_student_per_run  (cost=0.00..16.99 rows=627 width=0) (actual time=0.026..0.027 rows=600 loops=1)
+                                       Index Cond: (run_id = 1)
+                                       Buffers: shared hit=4
+                           ->  Hash  (cost=289.99..289.99 rows=627 width=16) (actual time=0.168..0.168 rows=600 loops=1)
+                                 Buckets: 1024  Batches: 1  Memory Usage: 39kB
+                                 Buffers: shared hit=8
+                                 ->  Bitmap Heap Scan on seat_allocations sa  (cost=17.15..289.99 rows=627 width=16) (actual time=0.020..0.083 rows=600 loops=1)
+                                       Recheck Cond: (run_id = 1)
+                                       Heap Blocks: exact=4
+                                       Buffers: shared hit=8
+                                       ->  Bitmap Index Scan on uq_seat_student_per_run  (cost=0.00..16.99 rows=627 width=0) (actual time=0.016..0.016 rows=600 loops=1)
+                                             Index Cond: (run_id = 1)
+                                             Buffers: shared hit=4
+                     ->  Index Scan using students_pkey on students s1  (cost=0.28..0.35 rows=1 width=14) (actual time=0.001..0.001 rows=1 loops=480)
+                           Index Cond: (id = a.student_id)
+                           Buffers: shared hit=1440
+               ->  Index Scan using students_pkey on students s2  (cost=0.28..0.35 rows=1 width=14) (actual time=0.001..0.001 rows=1 loops=480)
+                     Index Cond: (id = sa.student_id)
+                     Buffers: shared hit=1440
+ Planning:
+   Buffers: shared hit=415
+ Planning Time: 1.088 ms
+ Execution Time: 1.228 ms
+(42 rows)
+
+
+
+Summary: run1=1.234ms  run2=1.232ms  run3=1.228ms  avg=1.231ms

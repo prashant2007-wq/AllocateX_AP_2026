@@ -1,0 +1,157 @@
+Query: Q07  Type: READ
+Description: students NOT placed in any room for a given run
+============================================================
+=== Run 1 ===
+                                                                                        QUERY PLAN                                                                                         
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=157.23..157.24 rows=1 width=27) (actual time=2.508..2.509 rows=0 loops=1)
+   Sort Key: s.roll_no
+   Sort Method: quicksort  Memory: 25kB
+   Buffers: shared hit=5023
+   ->  Nested Loop  (cost=77.91..157.22 rows=1 width=27) (actual time=2.499..2.500 rows=0 loops=1)
+         Join Filter: (e.id = seat_allocations.exam_id)
+         Rows Removed by Join Filter: 4000
+         Buffers: shared hit=5020
+         ->  Nested Loop  (cost=53.08..132.13 rows=1 width=35) (actual time=0.488..1.910 rows=1000 loops=1)
+               Buffers: shared hit=5015
+               ->  Nested Loop  (cost=52.95..131.97 rows=1 width=25) (actual time=0.481..1.407 rows=1000 loops=1)
+                     Buffers: shared hit=3015
+                     ->  Merge Anti Join  (cost=52.67..131.65 rows=1 width=8) (actual time=0.472..0.619 rows=1000 loops=1)
+                           Merge Cond: ((er.exam_id = sa.exam_id) AND (er.student_id = sa.student_id))
+                           Buffers: shared hit=15
+                           ->  Index Only Scan using exam_registrations_pkey on exam_registrations er  (cost=0.28..64.28 rows=1600 width=8) (actual time=0.049..0.205 rows=1600 loops=1)
+                                 Heap Fetches: 0
+                                 Buffers: shared hit=10
+                           ->  Sort  (cost=52.39..53.96 rows=627 width=8) (actual time=0.242..0.260 rows=600 loops=1)
+                                 Sort Key: sa.exam_id, sa.student_id
+                                 Sort Method: quicksort  Memory: 53kB
+                                 Buffers: shared hit=5
+                                 ->  Index Only Scan using uq_seat_student_per_run on seat_allocations sa  (cost=0.29..23.26 rows=627 width=8) (actual time=0.052..0.106 rows=600 loops=1)
+                                       Index Cond: (run_id = 1)
+                                       Heap Fetches: 0
+                                       Buffers: shared hit=5
+                     ->  Index Scan using students_pkey on students s  (cost=0.28..0.32 rows=1 width=25) (actual time=0.001..0.001 rows=1 loops=1000)
+                           Index Cond: (id = er.student_id)
+                           Buffers: shared hit=3000
+               ->  Index Scan using exams_pkey on exams e  (cost=0.13..0.16 rows=1 width=10) (actual time=0.000..0.000 rows=1 loops=1000)
+                     Index Cond: (id = er.exam_id)
+                     Buffers: shared hit=2000
+         ->  HashAggregate  (cost=24.83..24.91 rows=8 width=4) (actual time=0.000..0.000 rows=4 loops=1000)
+               Group Key: seat_allocations.exam_id
+               Batches: 1  Memory Usage: 24kB
+               Buffers: shared hit=5
+               ->  Index Only Scan using uq_seat_student_per_run on seat_allocations  (cost=0.29..23.26 rows=627 width=4) (actual time=0.015..0.048 rows=600 loops=1)
+                     Index Cond: (run_id = 1)
+                     Heap Fetches: 0
+                     Buffers: shared hit=5
+ Planning:
+   Buffers: shared hit=268
+ Planning Time: 1.389 ms
+ Execution Time: 2.615 ms
+(44 rows)
+
+
+
+=== Run 2 ===
+                                                                                        QUERY PLAN                                                                                         
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=157.23..157.24 rows=1 width=27) (actual time=2.793..2.794 rows=0 loops=1)
+   Sort Key: s.roll_no
+   Sort Method: quicksort  Memory: 25kB
+   Buffers: shared hit=5023
+   ->  Nested Loop  (cost=77.91..157.22 rows=1 width=27) (actual time=2.784..2.784 rows=0 loops=1)
+         Join Filter: (e.id = seat_allocations.exam_id)
+         Rows Removed by Join Filter: 4000
+         Buffers: shared hit=5020
+         ->  Nested Loop  (cost=53.08..132.13 rows=1 width=35) (actual time=0.512..2.103 rows=1000 loops=1)
+               Buffers: shared hit=5015
+               ->  Nested Loop  (cost=52.95..131.97 rows=1 width=25) (actual time=0.504..1.497 rows=1000 loops=1)
+                     Buffers: shared hit=3015
+                     ->  Merge Anti Join  (cost=52.67..131.65 rows=1 width=8) (actual time=0.495..0.646 rows=1000 loops=1)
+                           Merge Cond: ((er.exam_id = sa.exam_id) AND (er.student_id = sa.student_id))
+                           Buffers: shared hit=15
+                           ->  Index Only Scan using exam_registrations_pkey on exam_registrations er  (cost=0.28..64.28 rows=1600 width=8) (actual time=0.050..0.176 rows=1600 loops=1)
+                                 Heap Fetches: 0
+                                 Buffers: shared hit=10
+                           ->  Sort  (cost=52.39..53.96 rows=627 width=8) (actual time=0.271..0.294 rows=600 loops=1)
+                                 Sort Key: sa.exam_id, sa.student_id
+                                 Sort Method: quicksort  Memory: 53kB
+                                 Buffers: shared hit=5
+                                 ->  Index Only Scan using uq_seat_student_per_run on seat_allocations sa  (cost=0.29..23.26 rows=627 width=8) (actual time=0.056..0.110 rows=600 loops=1)
+                                       Index Cond: (run_id = 1)
+                                       Heap Fetches: 0
+                                       Buffers: shared hit=5
+                     ->  Index Scan using students_pkey on students s  (cost=0.28..0.32 rows=1 width=25) (actual time=0.001..0.001 rows=1 loops=1000)
+                           Index Cond: (id = er.student_id)
+                           Buffers: shared hit=3000
+               ->  Index Scan using exams_pkey on exams e  (cost=0.13..0.16 rows=1 width=10) (actual time=0.000..0.000 rows=1 loops=1000)
+                     Index Cond: (id = er.exam_id)
+                     Buffers: shared hit=2000
+         ->  HashAggregate  (cost=24.83..24.91 rows=8 width=4) (actual time=0.000..0.000 rows=4 loops=1000)
+               Group Key: seat_allocations.exam_id
+               Batches: 1  Memory Usage: 24kB
+               Buffers: shared hit=5
+               ->  Index Only Scan using uq_seat_student_per_run on seat_allocations  (cost=0.29..23.26 rows=627 width=4) (actual time=0.013..0.055 rows=600 loops=1)
+                     Index Cond: (run_id = 1)
+                     Heap Fetches: 0
+                     Buffers: shared hit=5
+ Planning:
+   Buffers: shared hit=268
+ Planning Time: 1.589 ms
+ Execution Time: 2.909 ms
+(44 rows)
+
+
+
+=== Run 3 ===
+                                                                                        QUERY PLAN                                                                                         
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=157.23..157.24 rows=1 width=27) (actual time=2.694..2.695 rows=0 loops=1)
+   Sort Key: s.roll_no
+   Sort Method: quicksort  Memory: 25kB
+   Buffers: shared hit=5023
+   ->  Nested Loop  (cost=77.91..157.22 rows=1 width=27) (actual time=2.685..2.686 rows=0 loops=1)
+         Join Filter: (e.id = seat_allocations.exam_id)
+         Rows Removed by Join Filter: 4000
+         Buffers: shared hit=5020
+         ->  Nested Loop  (cost=53.08..132.13 rows=1 width=35) (actual time=0.526..2.023 rows=1000 loops=1)
+               Buffers: shared hit=5015
+               ->  Nested Loop  (cost=52.95..131.97 rows=1 width=25) (actual time=0.518..1.467 rows=1000 loops=1)
+                     Buffers: shared hit=3015
+                     ->  Merge Anti Join  (cost=52.67..131.65 rows=1 width=8) (actual time=0.511..0.641 rows=1000 loops=1)
+                           Merge Cond: ((er.exam_id = sa.exam_id) AND (er.student_id = sa.student_id))
+                           Buffers: shared hit=15
+                           ->  Index Only Scan using exam_registrations_pkey on exam_registrations er  (cost=0.28..64.28 rows=1600 width=8) (actual time=0.050..0.159 rows=1600 loops=1)
+                                 Heap Fetches: 0
+                                 Buffers: shared hit=10
+                           ->  Sort  (cost=52.39..53.96 rows=627 width=8) (actual time=0.285..0.306 rows=600 loops=1)
+                                 Sort Key: sa.exam_id, sa.student_id
+                                 Sort Method: quicksort  Memory: 53kB
+                                 Buffers: shared hit=5
+                                 ->  Index Only Scan using uq_seat_student_per_run on seat_allocations sa  (cost=0.29..23.26 rows=627 width=8) (actual time=0.053..0.115 rows=600 loops=1)
+                                       Index Cond: (run_id = 1)
+                                       Heap Fetches: 0
+                                       Buffers: shared hit=5
+                     ->  Index Scan using students_pkey on students s  (cost=0.28..0.32 rows=1 width=25) (actual time=0.001..0.001 rows=1 loops=1000)
+                           Index Cond: (id = er.student_id)
+                           Buffers: shared hit=3000
+               ->  Index Scan using exams_pkey on exams e  (cost=0.13..0.16 rows=1 width=10) (actual time=0.000..0.000 rows=1 loops=1000)
+                     Index Cond: (id = er.exam_id)
+                     Buffers: shared hit=2000
+         ->  HashAggregate  (cost=24.83..24.91 rows=8 width=4) (actual time=0.000..0.000 rows=4 loops=1000)
+               Group Key: seat_allocations.exam_id
+               Batches: 1  Memory Usage: 24kB
+               Buffers: shared hit=5
+               ->  Index Only Scan using uq_seat_student_per_run on seat_allocations  (cost=0.29..23.26 rows=627 width=4) (actual time=0.015..0.057 rows=600 loops=1)
+                     Index Cond: (run_id = 1)
+                     Heap Fetches: 0
+                     Buffers: shared hit=5
+ Planning:
+   Buffers: shared hit=268
+ Planning Time: 1.665 ms
+ Execution Time: 2.810 ms
+(44 rows)
+
+
+
+Summary: run1=2.615ms  run2=2.909ms  run3=2.810ms  avg=2.778ms

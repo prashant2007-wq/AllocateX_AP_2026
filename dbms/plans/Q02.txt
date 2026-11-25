@@ -1,0 +1,97 @@
+Query: Q02  Type: READ
+Description: room-wise seating chart for one room of one run
+============================================================
+=== Run 1 ===
+                                                                            QUERY PLAN                                                                             
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=71.41..71.47 rows=24 width=31) (actual time=0.041..0.042 rows=0 loops=1)
+   Sort Key: sa.seat_row, sa.seat_col
+   Sort Method: quicksort  Memory: 25kB
+   Buffers: shared hit=6
+   ->  Hash Join  (cost=19.97..70.86 rows=24 width=31) (actual time=0.031..0.031 rows=0 loops=1)
+         Hash Cond: (sa.exam_id = e.id)
+         Buffers: shared hit=3
+         ->  Hash Join  (cost=18.79..69.59 rows=24 width=29) (actual time=0.015..0.015 rows=0 loops=1)
+               Hash Cond: (sa.student_id = s.id)
+               Buffers: shared hit=2
+               ->  Index Scan using uq_seat_position_per_run on seat_allocations sa  (cost=0.29..51.02 rows=24 width=12) (actual time=0.015..0.015 rows=0 loops=1)
+                     Index Cond: ((run_id = 1) AND (room_id = 1))
+                     Buffers: shared hit=2
+               ->  Hash  (cost=11.00..11.00 rows=600 width=25) (never executed)
+                     ->  Seq Scan on students s  (cost=0.00..11.00 rows=600 width=25) (never executed)
+         ->  Hash  (cost=1.08..1.08 rows=8 width=10) (actual time=0.011..0.011 rows=8 loops=1)
+               Buckets: 1024  Batches: 1  Memory Usage: 9kB
+               Buffers: shared hit=1
+               ->  Seq Scan on exams e  (cost=0.00..1.08 rows=8 width=10) (actual time=0.005..0.006 rows=8 loops=1)
+                     Buffers: shared hit=1
+ Planning:
+   Buffers: shared hit=326
+ Planning Time: 0.924 ms
+ Execution Time: 0.102 ms
+(24 rows)
+
+
+
+=== Run 2 ===
+                                                                            QUERY PLAN                                                                             
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=71.41..71.47 rows=24 width=31) (actual time=0.038..0.040 rows=0 loops=1)
+   Sort Key: sa.seat_row, sa.seat_col
+   Sort Method: quicksort  Memory: 25kB
+   Buffers: shared hit=6
+   ->  Hash Join  (cost=19.97..70.86 rows=24 width=31) (actual time=0.027..0.028 rows=0 loops=1)
+         Hash Cond: (sa.exam_id = e.id)
+         Buffers: shared hit=3
+         ->  Hash Join  (cost=18.79..69.59 rows=24 width=29) (actual time=0.008..0.008 rows=0 loops=1)
+               Hash Cond: (sa.student_id = s.id)
+               Buffers: shared hit=2
+               ->  Index Scan using uq_seat_position_per_run on seat_allocations sa  (cost=0.29..51.02 rows=24 width=12) (actual time=0.007..0.008 rows=0 loops=1)
+                     Index Cond: ((run_id = 1) AND (room_id = 1))
+                     Buffers: shared hit=2
+               ->  Hash  (cost=11.00..11.00 rows=600 width=25) (never executed)
+                     ->  Seq Scan on students s  (cost=0.00..11.00 rows=600 width=25) (never executed)
+         ->  Hash  (cost=1.08..1.08 rows=8 width=10) (actual time=0.015..0.015 rows=8 loops=1)
+               Buckets: 1024  Batches: 1  Memory Usage: 9kB
+               Buffers: shared hit=1
+               ->  Seq Scan on exams e  (cost=0.00..1.08 rows=8 width=10) (actual time=0.007..0.008 rows=8 loops=1)
+                     Buffers: shared hit=1
+ Planning:
+   Buffers: shared hit=326
+ Planning Time: 1.052 ms
+ Execution Time: 0.110 ms
+(24 rows)
+
+
+
+=== Run 3 ===
+                                                                            QUERY PLAN                                                                             
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=71.41..71.47 rows=24 width=31) (actual time=0.033..0.034 rows=0 loops=1)
+   Sort Key: sa.seat_row, sa.seat_col
+   Sort Method: quicksort  Memory: 25kB
+   Buffers: shared hit=6
+   ->  Hash Join  (cost=19.97..70.86 rows=24 width=31) (actual time=0.023..0.024 rows=0 loops=1)
+         Hash Cond: (sa.exam_id = e.id)
+         Buffers: shared hit=3
+         ->  Hash Join  (cost=18.79..69.59 rows=24 width=29) (actual time=0.006..0.007 rows=0 loops=1)
+               Hash Cond: (sa.student_id = s.id)
+               Buffers: shared hit=2
+               ->  Index Scan using uq_seat_position_per_run on seat_allocations sa  (cost=0.29..51.02 rows=24 width=12) (actual time=0.006..0.006 rows=0 loops=1)
+                     Index Cond: ((run_id = 1) AND (room_id = 1))
+                     Buffers: shared hit=2
+               ->  Hash  (cost=11.00..11.00 rows=600 width=25) (never executed)
+                     ->  Seq Scan on students s  (cost=0.00..11.00 rows=600 width=25) (never executed)
+         ->  Hash  (cost=1.08..1.08 rows=8 width=10) (actual time=0.013..0.013 rows=8 loops=1)
+               Buckets: 1024  Batches: 1  Memory Usage: 9kB
+               Buffers: shared hit=1
+               ->  Seq Scan on exams e  (cost=0.00..1.08 rows=8 width=10) (actual time=0.005..0.007 rows=8 loops=1)
+                     Buffers: shared hit=1
+ Planning:
+   Buffers: shared hit=326
+ Planning Time: 0.972 ms
+ Execution Time: 0.095 ms
+(24 rows)
+
+
+
+Summary: run1=0.102ms  run2=0.110ms  run3=0.095ms  avg=0.102ms

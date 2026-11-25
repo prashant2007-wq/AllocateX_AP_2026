@@ -1,0 +1,121 @@
+Query: Q11  Type: READ
+Description: top-5 most congested runs by student-to-seat ratio
+============================================================
+=== Run 1 ===
+                                                                      QUERY PLAN                                                                      
+------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=1243.38..1243.40 rows=5 width=64) (actual time=21.733..21.736 rows=5 loops=1)
+   Buffers: shared hit=270
+   ->  Sort  (cost=1243.38..1243.61 rows=90 width=64) (actual time=21.732..21.734 rows=5 loops=1)
+         Sort Key: (round((((count(sa.student_id))::numeric / (NULLIF(sum(r.capacity), 0))::numeric) * '100'::numeric), 2)) DESC
+         Sort Method: top-N heapsort  Memory: 25kB
+         Buffers: shared hit=270
+         ->  HashAggregate  (cost=1239.64..1241.89 rows=90 width=64) (actual time=21.662..21.701 rows=78 loops=1)
+               Group Key: ar.id
+               Batches: 1  Memory Usage: 32kB
+               Buffers: shared hit=267
+               ->  Hash Join  (cost=4.59..927.64 rows=41600 width=22) (actual time=0.060..16.113 rows=41600 loops=1)
+                     Hash Cond: (sa.room_id = r.id)
+                     Buffers: shared hit=267
+                     ->  Hash Join  (cost=3.02..798.36 rows=41600 width=24) (actual time=0.039..10.471 rows=41600 loops=1)
+                           Hash Cond: (sa.run_id = ar.id)
+                           Buffers: shared hit=266
+                           ->  Seq Scan on seat_allocations sa  (cost=0.00..681.00 rows=41600 width=12) (actual time=0.004..2.882 rows=41600 loops=1)
+                                 Buffers: shared hit=265
+                           ->  Hash  (cost=1.90..1.90 rows=90 width=16) (actual time=0.028..0.029 rows=90 loops=1)
+                                 Buckets: 1024  Batches: 1  Memory Usage: 13kB
+                                 Buffers: shared hit=1
+                                 ->  Seq Scan on allocation_runs ar  (cost=0.00..1.90 rows=90 width=16) (actual time=0.006..0.013 rows=90 loops=1)
+                                       Buffers: shared hit=1
+                     ->  Hash  (cost=1.25..1.25 rows=25 width=6) (actual time=0.015..0.016 rows=25 loops=1)
+                           Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                           Buffers: shared hit=1
+                           ->  Seq Scan on rooms r  (cost=0.00..1.25 rows=25 width=6) (actual time=0.006..0.008 rows=25 loops=1)
+                                 Buffers: shared hit=1
+ Planning:
+   Buffers: shared hit=234
+ Planning Time: 1.071 ms
+ Execution Time: 21.804 ms
+(32 rows)
+
+
+
+=== Run 2 ===
+                                                                      QUERY PLAN                                                                      
+------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=1243.38..1243.40 rows=5 width=64) (actual time=19.542..19.544 rows=5 loops=1)
+   Buffers: shared hit=270
+   ->  Sort  (cost=1243.38..1243.61 rows=90 width=64) (actual time=19.541..19.543 rows=5 loops=1)
+         Sort Key: (round((((count(sa.student_id))::numeric / (NULLIF(sum(r.capacity), 0))::numeric) * '100'::numeric), 2)) DESC
+         Sort Method: top-N heapsort  Memory: 25kB
+         Buffers: shared hit=270
+         ->  HashAggregate  (cost=1239.64..1241.89 rows=90 width=64) (actual time=19.462..19.506 rows=78 loops=1)
+               Group Key: ar.id
+               Batches: 1  Memory Usage: 32kB
+               Buffers: shared hit=267
+               ->  Hash Join  (cost=4.59..927.64 rows=41600 width=22) (actual time=0.066..14.838 rows=41600 loops=1)
+                     Hash Cond: (sa.room_id = r.id)
+                     Buffers: shared hit=267
+                     ->  Hash Join  (cost=3.02..798.36 rows=41600 width=24) (actual time=0.039..9.436 rows=41600 loops=1)
+                           Hash Cond: (sa.run_id = ar.id)
+                           Buffers: shared hit=266
+                           ->  Seq Scan on seat_allocations sa  (cost=0.00..681.00 rows=41600 width=12) (actual time=0.005..2.380 rows=41600 loops=1)
+                                 Buffers: shared hit=265
+                           ->  Hash  (cost=1.90..1.90 rows=90 width=16) (actual time=0.027..0.027 rows=90 loops=1)
+                                 Buckets: 1024  Batches: 1  Memory Usage: 13kB
+                                 Buffers: shared hit=1
+                                 ->  Seq Scan on allocation_runs ar  (cost=0.00..1.90 rows=90 width=16) (actual time=0.009..0.017 rows=90 loops=1)
+                                       Buffers: shared hit=1
+                     ->  Hash  (cost=1.25..1.25 rows=25 width=6) (actual time=0.022..0.022 rows=25 loops=1)
+                           Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                           Buffers: shared hit=1
+                           ->  Seq Scan on rooms r  (cost=0.00..1.25 rows=25 width=6) (actual time=0.007..0.010 rows=25 loops=1)
+                                 Buffers: shared hit=1
+ Planning:
+   Buffers: shared hit=234
+ Planning Time: 1.187 ms
+ Execution Time: 19.620 ms
+(32 rows)
+
+
+
+=== Run 3 ===
+                                                                      QUERY PLAN                                                                      
+------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=1243.38..1243.40 rows=5 width=64) (actual time=17.534..17.535 rows=5 loops=1)
+   Buffers: shared hit=270
+   ->  Sort  (cost=1243.38..1243.61 rows=90 width=64) (actual time=17.533..17.534 rows=5 loops=1)
+         Sort Key: (round((((count(sa.student_id))::numeric / (NULLIF(sum(r.capacity), 0))::numeric) * '100'::numeric), 2)) DESC
+         Sort Method: top-N heapsort  Memory: 25kB
+         Buffers: shared hit=270
+         ->  HashAggregate  (cost=1239.64..1241.89 rows=90 width=64) (actual time=17.468..17.506 rows=78 loops=1)
+               Group Key: ar.id
+               Batches: 1  Memory Usage: 32kB
+               Buffers: shared hit=267
+               ->  Hash Join  (cost=4.59..927.64 rows=41600 width=22) (actual time=0.044..13.263 rows=41600 loops=1)
+                     Hash Cond: (sa.room_id = r.id)
+                     Buffers: shared hit=267
+                     ->  Hash Join  (cost=3.02..798.36 rows=41600 width=24) (actual time=0.029..8.431 rows=41600 loops=1)
+                           Hash Cond: (sa.run_id = ar.id)
+                           Buffers: shared hit=266
+                           ->  Seq Scan on seat_allocations sa  (cost=0.00..681.00 rows=41600 width=12) (actual time=0.004..2.089 rows=41600 loops=1)
+                                 Buffers: shared hit=265
+                           ->  Hash  (cost=1.90..1.90 rows=90 width=16) (actual time=0.020..0.020 rows=90 loops=1)
+                                 Buckets: 1024  Batches: 1  Memory Usage: 13kB
+                                 Buffers: shared hit=1
+                                 ->  Seq Scan on allocation_runs ar  (cost=0.00..1.90 rows=90 width=16) (actual time=0.005..0.011 rows=90 loops=1)
+                                       Buffers: shared hit=1
+                     ->  Hash  (cost=1.25..1.25 rows=25 width=6) (actual time=0.011..0.011 rows=25 loops=1)
+                           Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                           Buffers: shared hit=1
+                           ->  Seq Scan on rooms r  (cost=0.00..1.25 rows=25 width=6) (actual time=0.004..0.006 rows=25 loops=1)
+                                 Buffers: shared hit=1
+ Planning:
+   Buffers: shared hit=234
+ Planning Time: 0.896 ms
+ Execution Time: 17.608 ms
+(32 rows)
+
+
+
+Summary: run1=21.804ms  run2=19.620ms  run3=17.608ms  avg=19.677ms

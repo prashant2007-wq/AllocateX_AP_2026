@@ -1,0 +1,16 @@
+query,type,description,run1_ms,run2_ms,run3_ms,avg_ms,scan_types
+Q01,READ,student looks up their seat (GET /api/students/:id/seat?exam_id=),0.123,0.127,0.125,0.125,Hash Join; Index Scan; Nested Loop; Seq Scan
+Q02,READ,room-wise seating chart for one room of one run,0.102,0.110,0.095,0.102,Hash Join; Index Scan; Seq Scan
+Q03,READ,"summary of all runs — count seats, rooms, violations per run",17.498,17.383,16.990,17.290,Index Scan; Seq Scan
+Q04,READ,invigilator workload — how many rooms each invigilator covers across all runs,0.933,0.954,0.934,0.940,Seq Scan
+Q05,READ,adjacent-seat section conflict check for a given run,1.234,1.232,1.228,1.231,Bitmap Heap Scan; Hash Join; Index Scan; Nested Loop
+Q06,READ,rooms that are over capacity in a given run,0.344,0.344,0.338,0.342,Bitmap Heap Scan; Hash Join; Index Scan; Seq Scan
+Q07,READ,students NOT placed in any room for a given run,2.615,2.909,2.810,2.778,Index Only Scan; Index Scan; Nested Loop
+Q08,READ,section-wise student distribution per room for one run,0.776,0.724,0.853,0.784,Bitmap Heap Scan; Hash Join; Index Scan; Seq Scan
+Q09,READ,violation summary by type across all runs,0.184,0.217,0.299,0.233,Seq Scan
+Q10,READ,exam registration counts per exam with seats available across all rooms,1.463,0.905,1.618,1.329,Hash Join; Nested Loop; Seq Scan
+Q11,READ,top-5 most congested runs by student-to-seat ratio,21.804,19.620,17.608,19.677,Hash Join; Seq Scan
+Q12,READ,per-building seat utilisation for the latest completed run,0.456,0.410,0.437,0.434,Bitmap Heap Scan; Index Scan; Seq Scan
+Q13,WRITE,insert a new allocation run (wrapped in BEGIN...ROLLBACK for safety),0.275,0.225,0.309,0.270,N/A
+Q14,WRITE,mark a run as LOCKED (simulates admin approving results),0.216,0.175,0.289,0.227,Seq Scan
+Q15,WRITE,delete all seat allocations for a FAILED run (cleanup),7.889,6.756,6.827,7.157,Hash Join; Seq Scan

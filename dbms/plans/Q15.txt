@@ -1,0 +1,85 @@
+Query: Q15  Type: WRITE
+Description: delete all seat allocations for a FAILED run (cleanup)
+============================================================
+=== Run 1 ===
+BEGIN
+                                                           QUERY PLAN                                                            
+---------------------------------------------------------------------------------------------------------------------------------
+ Delete on seat_allocations  (cost=2.27..797.61 rows=5547 width=12) (actual time=7.822..7.825 rows=0 loops=1)
+   Buffers: shared hit=266
+   ->  Hash Join  (cost=2.27..797.61 rows=5547 width=12) (actual time=7.821..7.823 rows=0 loops=1)
+         Hash Cond: (seat_allocations.run_id = allocation_runs.id)
+         Buffers: shared hit=266
+         ->  Seq Scan on seat_allocations  (cost=0.00..681.00 rows=41600 width=10) (actual time=0.011..5.162 rows=41600 loops=1)
+               Buffers: shared hit=265
+         ->  Hash  (cost=2.12..2.12 rows=12 width=10) (actual time=0.027..0.028 rows=12 loops=1)
+               Buckets: 1024  Batches: 1  Memory Usage: 9kB
+               Buffers: shared hit=1
+               ->  Seq Scan on allocation_runs  (cost=0.00..2.12 rows=12 width=10) (actual time=0.007..0.017 rows=12 loops=1)
+                     Filter: ((status)::text = 'FAILED'::text)
+                     Rows Removed by Filter: 78
+                     Buffers: shared hit=1
+ Planning:
+   Buffers: shared hit=224
+ Planning Time: 1.069 ms
+ Execution Time: 7.889 ms
+(18 rows)
+
+ROLLBACK
+
+
+=== Run 2 ===
+BEGIN
+                                                           QUERY PLAN                                                            
+---------------------------------------------------------------------------------------------------------------------------------
+ Delete on seat_allocations  (cost=2.27..797.61 rows=5547 width=12) (actual time=6.696..6.698 rows=0 loops=1)
+   Buffers: shared hit=266
+   ->  Hash Join  (cost=2.27..797.61 rows=5547 width=12) (actual time=6.695..6.696 rows=0 loops=1)
+         Hash Cond: (seat_allocations.run_id = allocation_runs.id)
+         Buffers: shared hit=266
+         ->  Seq Scan on seat_allocations  (cost=0.00..681.00 rows=41600 width=10) (actual time=0.011..4.429 rows=41600 loops=1)
+               Buffers: shared hit=265
+         ->  Hash  (cost=2.12..2.12 rows=12 width=10) (actual time=0.025..0.026 rows=12 loops=1)
+               Buckets: 1024  Batches: 1  Memory Usage: 9kB
+               Buffers: shared hit=1
+               ->  Seq Scan on allocation_runs  (cost=0.00..2.12 rows=12 width=10) (actual time=0.007..0.015 rows=12 loops=1)
+                     Filter: ((status)::text = 'FAILED'::text)
+                     Rows Removed by Filter: 78
+                     Buffers: shared hit=1
+ Planning:
+   Buffers: shared hit=224
+ Planning Time: 1.028 ms
+ Execution Time: 6.756 ms
+(18 rows)
+
+ROLLBACK
+
+
+=== Run 3 ===
+BEGIN
+                                                           QUERY PLAN                                                            
+---------------------------------------------------------------------------------------------------------------------------------
+ Delete on seat_allocations  (cost=2.27..797.61 rows=5547 width=12) (actual time=6.766..6.767 rows=0 loops=1)
+   Buffers: shared hit=266
+   ->  Hash Join  (cost=2.27..797.61 rows=5547 width=12) (actual time=6.764..6.765 rows=0 loops=1)
+         Hash Cond: (seat_allocations.run_id = allocation_runs.id)
+         Buffers: shared hit=266
+         ->  Seq Scan on seat_allocations  (cost=0.00..681.00 rows=41600 width=10) (actual time=0.014..4.343 rows=41600 loops=1)
+               Buffers: shared hit=265
+         ->  Hash  (cost=2.12..2.12 rows=12 width=10) (actual time=0.032..0.032 rows=12 loops=1)
+               Buckets: 1024  Batches: 1  Memory Usage: 9kB
+               Buffers: shared hit=1
+               ->  Seq Scan on allocation_runs  (cost=0.00..2.12 rows=12 width=10) (actual time=0.010..0.017 rows=12 loops=1)
+                     Filter: ((status)::text = 'FAILED'::text)
+                     Rows Removed by Filter: 78
+                     Buffers: shared hit=1
+ Planning:
+   Buffers: shared hit=224
+ Planning Time: 0.849 ms
+ Execution Time: 6.827 ms
+(18 rows)
+
+ROLLBACK
+
+
+Summary: run1=7.889ms  run2=6.756ms  run3=6.827ms  avg=7.157ms
